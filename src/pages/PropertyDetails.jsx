@@ -184,11 +184,10 @@ if(property){
 
 
 const toggleFavorite = async () => {
-
-  if (!user) {
-    alert("Veuillez vous connecter.");
-    return;
-  }
+if (!user || user.isAnonymous) {
+  alert("Veuillez vous connecter pour ajouter ce logement aux favoris.");
+  return;
+}
 
   console.log("LOGEMENT FAVORI :", property);
 
@@ -235,6 +234,10 @@ const handleTouchEnd = () => {
 
 const addReview = async () => {
 
+  if (!user || user.isAnonymous) {
+  alert("Veuillez vous connecter pour ajouter ce logement aux favoris.");
+  return;
+}
   
   if(rating === 0 || comment.trim() === ""){
     alert("Veuillez mettre une note et un avis");
