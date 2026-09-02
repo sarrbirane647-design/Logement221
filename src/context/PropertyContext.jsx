@@ -98,6 +98,10 @@ export function PropertyProvider({ children }) {
           );
           setProperties(data);
           setLoading(false);
+
+console.log("🏠 PROPERTIES FIREBASE CHARGÉES :", data.length);
+console.log("🏠 PROPERTIES :", data);
+
         } catch (error) {
           console.error(
             "Erreur traitement logements Firebase :",
