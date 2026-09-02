@@ -42,7 +42,7 @@ const property = properties.find(
   const [name, setName] = useState(property?.owner?.name || "");
   const [images, setImages] = useState([]);
 const [video, setVideo] = useState(null);
-const [premium, setPremium] = useState(property?.premium || false);
+
 
 const handleSubmit = async (e) => {
 
@@ -71,7 +71,6 @@ const updatedProperty = {
   city,
   type,
   price,
-  premium,
   rooms,
   bathrooms,
   surface,
@@ -175,17 +174,6 @@ if(!property){
               placeholder="Ville"
             />
 
-<label className="premium-option">
-
-  <input
-    type="checkbox"
-    checked={premium}
-    onChange={(e)=>setPremium(e.target.checked)}
-  />
-
-  ⭐ Mettre cette annonce en Premium
-
-</label>
 
             <select
               value={type}

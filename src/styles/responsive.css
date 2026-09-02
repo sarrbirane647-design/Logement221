@@ -819,3 +819,37 @@
     font-size: 14px;
   }
 }
+/* Liens cliquables des cartes logements */
+.listing-image-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.listing-info-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* Petit effet au passage / toucher */
+.listing-image-link:hover .listing-image {
+  transform: scale(1.02);
+}
+
+.listing-info-link:hover h3 {
+  text-decoration: underline;
+}
+
+/* Meilleur confort sur mobile */
+@media (max-width: 768px) {
+  .listing-image-link,
+  .listing-info-link {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .listing-info-link {
+    padding-bottom: 5px;
+  }
+}

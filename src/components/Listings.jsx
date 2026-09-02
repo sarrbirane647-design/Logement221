@@ -52,68 +52,85 @@ const popularProperties = properties
 
   popularProperties.map((property) => (
 
-   <div className="listing-card" key={property.firebaseId}>
-      <div
-        className="listing-image"
-        style={{
-          backgroundImage: `url(${property.images?.[0]})`,
-        }}
-      >
+  <div className="listing-card" key={property.firebaseId}>
 
-       <span className="price-badge">
-{
-isFurnished(property.type)
-? `${property.pricePerNight} FCFA/nuit`
-: `${property.price} FCFA/mois`
-}
-</span>
+  <Link
+    to={`/property/${property.firebaseId || property.id}`}
+    className="listing-image-link"
+  >
+    <div
+      className="listing-image"
+      style={{
+        backgroundImage: `url(${property.images?.[0]})`,
+      }}
+    >
 
-{property.premium && (
-  <span className="premium-badge">
-    ⭐ PREMIUM
-  </span>
-)}
+      <span className="price-badge">
+        {
+          isFurnished(property.type)
+            ? `${property.pricePerNight} FCFA/nuit`
+            : `${property.price} FCFA/mois`
+        }
+      </span>
 
-        <span className="available-badge">
-          Disponible
+      {property.premium && (
+        <span className="premium-badge">
+          ⭐ PREMIUM
+        </span>
+      )}
+
+      <span className="available-badge">
+        Disponible
+      </span>
+
+    </div>
+  </Link>
+
+
+  <div className="listing-info">
+
+    <Link
+      to={`/property/${property.firebaseId || property.id}`}
+      className="listing-info-link"
+    >
+
+      <p className="location">
+        📍 {property.city}
+      </p>
+
+      <h3>{property.title}</h3>
+
+      <div className="property-details">
+
+        <span>
+          <FaBed /> {property.rooms} ch.
+        </span>
+
+        <span>
+          <FaBath /> {property.bathrooms} sdb
+        </span>
+
+        <span>
+          <FiMaximize2 /> {property.surface} m²
         </span>
 
       </div>
 
-
-      <div className="listing-info">
-
-        <p className="location">
-          📍 {property.city}
-        </p>
-
-        <h3>{property.title}</h3>
+    </Link>
 
 
-        <div className="property-details">
+    <Link
+      to={`/property/${property.firebaseId || property.id}`}
+      className="details-btn"
+    >
+      Voir le logement
+    </Link>
 
-          <span><FaBed /> {property.rooms} ch.</span>
+  </div>
 
-          <span><FaBath /> {property.bathrooms} sdb</span>
+</div>
 
-          <span><FiMaximize2 /> {property.surface} m²</span>
-
-        </div>
-
-
- <Link
-  to={`/property/${property.firebaseId || property.id}`}
-  className="details-btn"
->
-  Voir le logement
-</Link>
-
-
-      </div>
-
-    </div>
-
-  ))
+))
 
 ) : (
 
@@ -241,97 +258,110 @@ Disponible
   })
   .slice(0,4)
   .map((property) => (
-  <div className="listing-card" key={property.firebaseId}>
-<div
-  className="listing-image"
-  style={{
-    backgroundImage: `url(${property.images?.[0]})`
-  }}
->
+ <div className="listing-card" key={property.firebaseId}>
 
-     <span className="price-badge">
- {property.pricePerNight} FCFA/nuit
-</span>
+  <Link
+    to={`/property/${property.firebaseId || property.id}`}
+    className="listing-image-link"
+  >
+    <div
+      className="listing-image"
+      style={{
+        backgroundImage: `url(${property.images?.[0]})`
+      }}
+    >
 
-{property.premium && (
-  <span className="premium-badge">
-    ⭐ PREMIUM
-  </span>
-)}
-
-<>
-<span
-  className={`available-badge ${
-    property.status === "loue"
-      ? "status-rented"
-      : "status-active"
-  }`}
->
-  {property.status === "loue"
-    ? "🔴 Loué"
-    : "🟢 Disponible"}
-</span>
-
-{(reviewsCount[property.firebaseId] || 0) >= 10 && (
-  <span className="super-host-badge">
-    ⭐ Super Hôte
-  </span>
-)}
-</>
-
-            </div>
-
-
-            <div className="listing-info">
-
-              <p className="location">
-                📍 {property.city}
-              </p>
-
-              <h3>
-                {property.title}
-              </h3>
-<div className="property-rating">
-  {reviewsCount[property.firebaseId] > 0 ? (
-    <>
-      ⭐ {reviewsAverage[property.firebaseId]}/5
-      <span>
-        ({reviewsCount[property.firebaseId]} avis)
+      <span className="price-badge">
+        {property.pricePerNight} FCFA/nuit
       </span>
-    </>
-  ) : (
-    <span>
-      Aucun avis
-    </span>
-  )}
+
+      {property.premium && (
+        <span className="premium-badge">
+          ⭐ PREMIUM
+        </span>
+      )}
+
+      <span
+        className={`available-badge ${
+          property.status === "loue"
+            ? "status-rented"
+            : "status-active"
+        }`}
+      >
+        {property.status === "loue"
+          ? "🔴 Loué"
+          : "🟢 Disponible"}
+      </span>
+
+      {(reviewsCount[property.firebaseId] || 0) >= 10 && (
+        <span className="super-host-badge">
+          ⭐ Super Hôte
+        </span>
+      )}
+
+    </div>
+  </Link>
+
+
+  <div className="listing-info">
+
+    <Link
+      to={`/property/${property.firebaseId || property.id}`}
+      className="listing-info-link"
+    >
+
+      <p className="location">
+        📍 {property.city}
+      </p>
+
+      <h3>
+        {property.title}
+      </h3>
+
+      <div className="property-rating">
+        {reviewsCount[property.firebaseId] > 0 ? (
+          <>
+            ⭐ {reviewsAverage[property.firebaseId]}/5
+            <span>
+              ({reviewsCount[property.firebaseId]} avis)
+            </span>
+          </>
+        ) : (
+          <span>
+            Aucun avis
+          </span>
+        )}
+      </div>
+
+      <div className="property-details">
+
+        <span>
+          <FaBed /> {property.rooms} ch.
+        </span>
+
+        <span>
+          <FaBath /> {property.bathrooms} sdb
+        </span>
+
+        <span>
+          <FiMaximize2 /> {property.surface}m²
+        </span>
+
+      </div>
+
+    </Link>
+
+
+    <Link
+      to={`/property/${property.firebaseId || property.id}`}
+      className="details-btn short-stay-btn"
+    >
+      Voir le logement
+    </Link>
+
+  </div>
+
 </div>
-
-              <div className="property-details">
-
-                <span>
-                  <FaBed /> {property.rooms} ch.
-                </span>
-
-                <span>
-                  <FaBath /> {property.bathrooms} sdb
-                </span>
-
-                <span>
-                  <FiMaximize2 /> {property.surface}m²
-                </span>
-
-              </div>
-
-<Link
- to={`/property/${property.firebaseId || property.id}`}
-  className="details-btn short-stay-btn"
->
-  Voir le logement
-</Link>
-
-            </div>
-
-          </div>
 
         ))}
 
