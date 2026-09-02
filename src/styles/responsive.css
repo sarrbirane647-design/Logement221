@@ -819,37 +819,73 @@
     font-size: 14px;
   }
 }
-/* Liens cliquables des cartes logements */
+/* =========================
+   LIENS CARTES LOGEMENTS
+========================= */
+
 .listing-image-link {
   display: block;
-  text-decoration: none;
-  color: inherit;
-}
-
-.listing-info-link {
-  display: block;
+  position: relative;
+  z-index: 10;
+  width: 100%;
   text-decoration: none;
   color: inherit;
   cursor: pointer;
 }
 
-/* Petit effet au passage / toucher */
-.listing-image-link:hover .listing-image {
-  transform: scale(1.02);
+.listing-image-link .listing-image {
+  position: relative;
+  z-index: 10;
+  cursor: pointer;
 }
 
-.listing-info-link:hover h3 {
-  text-decoration: underline;
+.listing-info-link {
+  display: block;
+  position: relative;
+  z-index: 10;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
 }
 
-/* Meilleur confort sur mobile */
+.listing-info-link h3 {
+  cursor: pointer;
+}
+
+/* Les éléments visuels sur la photo ne doivent pas bloquer le lien */
+.listing-image-link .price-badge,
+.listing-image-link .premium-badge,
+.listing-image-link .available-badge,
+.listing-image-link .super-host-badge {
+  pointer-events: none;
+}
+
 @media (max-width: 768px) {
+
   .listing-image-link,
   .listing-info-link {
     -webkit-tap-highlight-color: transparent;
   }
 
-  .listing-info-link {
-    padding-bottom: 5px;
+  .listing-image-link {
+    touch-action: manipulation;
   }
+
+}
+.listing-image-link {
+  display: block !important;
+  position: relative !important;
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+}
+
+.listing-image-link .listing-image {
+  pointer-events: auto !important;
+}
+
+.listing-info-link {
+  display: block !important;
+  position: relative !important;
+  z-index: 9999 !important;
+  pointer-events: auto !important;
 }
