@@ -7,7 +7,12 @@ import Footer from "../components/Footer";
 
 import { UserContext } from "../context/UserContext";
 
-import { signOut } from "firebase/auth";
+import {
+  signOut,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider
+} from "firebase/auth";
 import { auth, db } from "../firebase";
 
 import {
@@ -23,7 +28,10 @@ const { user } = useContext(UserContext);
 const navigate = useNavigate();
 
 const [profile, setProfile] = useState(null);
-
+const [currentPassword, setCurrentPassword] = useState("");
+const [newPassword, setNewPassword] = useState("");
+const [confirmPassword, setConfirmPassword] = useState("");
+const [passwordMessage, setPasswordMessage] = useState("");
 
 useEffect(()=>{
 
@@ -71,7 +79,78 @@ const logout = async()=>{
 
 };
 
+const handleChangePassword = async (e) => {
 
+  e.preventDefault();
+
+  setPasswordMessage("");
+
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    setPasswordMessage("Veuillez remplir tous les champs.");
+    return;
+  }
+
+  if (newPassword.length < 6) {
+    setPasswordMessage(
+      "Le nouveau mot de passe doit contenir au moins 6 caractères."
+    );
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    setPasswordMessage(
+      "Les nouveaux mots de passe ne correspondent pas."
+    );
+    return;
+  }
+
+  try {
+
+    const credential = EmailAuthProvider.credential(
+      user.email,
+      currentPassword
+    );
+
+    await reauthenticateWithCredential(
+      user,
+      credential
+    );
+
+    await updatePassword(
+      user,
+      newPassword
+    );
+
+    setPasswordMessage(
+      "Mot de passe modifié avec succès ✅"
+    );
+
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+
+  } catch (error) {
+
+    console.error("ERREUR MODIFICATION MOT DE PASSE :", error);
+
+    if (error.code === "auth/wrong-password" ||
+        error.code === "auth/invalid-credential") {
+
+      setPasswordMessage(
+        "Votre ancien mot de passe est incorrect."
+      );
+
+    } else {
+
+      setPasswordMessage(
+        "Impossible de modifier le mot de passe."
+      );
+
+    }
+
+  }
+
+};
 
 if(!user){
 
@@ -182,7 +261,51 @@ return (
 
 </div>
 
+<div className="password-change-section">
 
+  <h2>
+    🔐 Modifier le mot de passe
+  </h2>
+
+  <form onSubmit={handleChangePassword}>
+
+    <input
+      type="password"
+      placeholder="Ancien mot de passe"
+      value={currentPassword}
+      onChange={(e) => setCurrentPassword(e.target.value)}
+    />
+
+    <input
+      type="password"
+      placeholder="Nouveau mot de passe"
+      value={newPassword}
+      onChange={(e) => setNewPassword(e.target.value)}
+    />
+
+    <input
+      type="password"
+      placeholder="Confirmer le nouveau mot de passe"
+      value={confirmPassword}
+      onChange={(e) => setConfirmPassword(e.target.value)}
+    />
+
+    <button
+      type="submit"
+      className="login-btn"
+    >
+      Modifier le mot de passe
+    </button>
+
+    {passwordMessage && (
+      <p className="success-message">
+        {passwordMessage}
+      </p>
+    )}
+
+  </form>
+
+</div>
 
 <button
 className="login-btn"
