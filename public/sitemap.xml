@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <url>
+    <loc>https://logement221.vercel.app/</loc>
+  </url>
+
+  <url>
+    <loc>https://logement221.vercel.app/logements</loc>
+  </url>
+
+  <url>
+    <loc>https://logement221.vercel.app/publier</loc>
+  </url>
+
+  <url>
+    <loc>https://logement221.vercel.app/a-propos</loc>
+  </url>
+
+  <url>
+    <loc>https://logement221.vercel.app/contact</loc>
+  </url>
+
+</urlset>
