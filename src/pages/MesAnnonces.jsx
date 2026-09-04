@@ -17,15 +17,15 @@ import {
 } from "firebase/firestore";
 function MesAnnonces() {
   const {
-  properties,
-  deleteProperty,
-  updateProperty,
-  activatePremium,
-  loading,
-  viewsCount,
-  reviewsCount,
-  reviewsAverage
-} = useContext(PropertyContext);
+    properties,
+    deleteProperty,
+    updateProperty,
+    activatePremium,
+    loading,
+    viewsCount,
+    reviewsCount,
+    reviewsAverage
+  } = useContext(PropertyContext);
   const {
     user,
     loadingUser
@@ -34,7 +34,7 @@ function MesAnnonces() {
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [showPayment, setShowPayment] = useState(false);
-const [paymentMethod, setPaymentMethod] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState(null);
   const premiumPlans = [
     {
       id: "7jours",
@@ -58,30 +58,28 @@ const [paymentMethod, setPaymentMethod] = useState(null);
   const myProperties = properties.filter(
     (property) => property.owner?.uid === user?.uid
   );
- const openPremium = (property) => {
-  console.log("PREMIUM CLIQUÉ :", property);
-
-  setSelectedProperty(property);
-  setSelectedPlan(null);
-  setShowPremium(true);
-};
+  const openPremium = (property) => {
+    console.log("PREMIUM CLIQUÉ :", property);
+    setSelectedProperty(property);
+    setSelectedPlan(null);
+    setShowPremium(true);
+  };
   const closePremium = () => {
     setShowPremium(false);
     setSelectedProperty(null);
     setSelectedPlan(null);
   };
- const continueToPayment = () => {
-  if (!selectedPlan || !selectedProperty) {
-    alert("Veuillez sélectionner une formule Premium.");
-    return;
-  }
-
-  setShowPayment(true);
-};
-const closePayment = () => {
-  setShowPayment(false);
-  setPaymentMethod(null);
-};
+  const continueToPayment = () => {
+    if (!selectedPlan || !selectedProperty) {
+      alert("Veuillez sélectionner une formule Premium.");
+      return;
+    }
+    setShowPayment(true);
+  };
+  const closePayment = () => {
+    setShowPayment(false);
+    setPaymentMethod(null);
+  };
   if (loading || loadingUser) {
     return (
       <>
@@ -168,81 +166,92 @@ const closePayment = () => {
                 className="listing-card"
               >
                 {/* =========================
-                    IMAGE
+                    IMAGE CLIQUABLE
                 ========================= */}
-                <div
-                  className="listing-image"
-                  style={{
-                    backgroundImage: `url(${
-                      property.images &&
-                      property.images.length > 0
-                        ? property.images[0]
-                        : property.image
-                    })`,
-                  }}
+                <Link
+                  to={`/property/${property.firebaseId}`}
+                  className="listing-image-link"
                 >
-                  {/* PRIX */}
-                  <span className="price-badge">
-                    {
-                      [
-                        "Appartement meublé",
-                        "Villa meublée",
-                        "Chambre meublée"
-                      ].includes(property.type)
-                        ? `${property.pricePerNight} FCFA/nuit`
-                        : `${property.price} FCFA/mois`
-                    }
-                  </span>
-                  {/* PREMIUM */}
-                  {property.premium && (
-                    <span className="premium-badge">
-                      ⭐ PREMIUM
-                    </span>
-                  )}
-                  {/* STATUT */}
-                  <span
-                    className={`available-badge ${
-                      property.status === "loue"
-                        ? "status-rented"
-                        : property.status === "attente"
-                        ? "status-pending"
-                        : "status-active"
-                    }`}
+                  <div
+                    className="listing-image"
+                    style={{
+                      backgroundImage: `url(${
+                        property.images &&
+                        property.images.length > 0
+                          ? property.images[0]
+                          : property.image
+                      })`
+                    }}
                   >
-                    {
-                      property.status === "loue"
-                        ? "🔴 Loué"
-                        : property.status === "attente"
-                        ? "🟡 En attente"
-                        : "🟢 Disponible"
-                    }
-                  </span>
-                </div>
+                    {/* PRIX */}
+                    <span className="price-badge">
+                      {
+                        [
+                          "Appartement meublé",
+                          "Villa meublée",
+                          "Chambre meublée"
+                        ].includes(property.type)
+                          ? `${property.pricePerNight} FCFA/nuit`
+                          : `${property.price} FCFA/mois`
+                      }
+                    </span>
+                    {/* PREMIUM */}
+                    {property.premium && (
+                      <span className="premium-badge">
+                        ⭐ PREMIUM
+                      </span>
+                    )}
+                    {/* STATUT */}
+                    <span
+                      className={`available-badge ${
+                        property.status === "loue"
+                          ? "status-rented"
+                          : property.status === "attente"
+                          ? "status-pending"
+                          : "status-active"
+                      }`}
+                    >
+                      {
+                        property.status === "loue"
+                          ? "🔴 Loué"
+                          : property.status === "attente"
+                          ? "🟡 En attente"
+                          : "🟢 Disponible"
+                      }
+                    </span>
+                  </div>
+                </Link>
                 {/* =========================
                     INFORMATIONS
                 ========================= */}
                 <div className="listing-info">
-                  <p className="location">
-                    {property.city}
-                  </p>
-                  <h3>
-                    {property.title}
-                  </h3>
-                  {/* DETAILS */}
-                  <div className="property-details">
-                    <span>
-                      <FaBed />
-                      {property.rooms || 0} ch.
-                    </span>
-                    <span>
-                      <FaBath />
-                      {property.bathrooms || 0} sdb.
-                    </span>
-                    <span>
-                      <FiMaximize2 />
-                      {property.surface || 0}m²
-                    </span>
-                  </div>
+                  {/* TITRE + DETAILS CLIQUABLES */}
+                  <Link
+                    to={`/property/${property.firebaseId}`}
+                    className="listing-info-link"
+                  >
+                    <p className="location">
+                      📍 {property.city}
+                    </p>
+                    <h3>
+                      {property.title}
+                    </h3>
+                    {/* DETAILS */}
+                    <div className="property-details">
+                      <span>
+                        <FaBed />
+                        {property.rooms || 0} ch.
+                      </span>
+                      <span>
+                        <FaBath />
+                        {property.bathrooms || 0} sdb.
+                      </span>
+                      <span>
+                        <FiMaximize2 />
+                        {property.surface || 0}m²
+                      </span>
+                    </div>
+                  </Link>
                   {/* =========================
                       STATISTIQUES ANNONCE
                   ========================= */}
@@ -270,18 +279,19 @@ const closePayment = () => {
                       <strong>
                         ⭐ Annonce Premium
                       </strong>
-                     {property.premiumUntil && (
-  <small>
-    Jusqu'au{" "}
-    {typeof property.premiumUntil.toDate === "function"
-      ? property.premiumUntil
-          .toDate()
-          .toLocaleDateString("fr-FR")
-      : new Date(
-          property.premiumUntil
-        ).toLocaleDateString("fr-FR")}
-  </small>
-)}
+                      {property.premiumUntil && (
+                        <small>
+                          Jusqu'au{" "}
+                          {typeof property.premiumUntil.toDate === "function"
+                            ? property.premiumUntil
+                                .toDate()
+                                .toLocaleDateString("fr-FR")
+                            : new Date(
+                                property.premiumUntil
+                              ).toLocaleDateString("fr-FR")
+                          }
+                        </small>
+                      )}
                     </div>
                   ) : (
                     <button
@@ -293,13 +303,13 @@ const closePayment = () => {
                     </button>
                   )}
                   {/* =========================
-                      VOIR DETAILS
+                      VOIR LE LOGEMENT
                   ========================= */}
                   <Link
                     to={`/property/${property.firebaseId}`}
                     className="details-btn"
                   >
-                    Voir détails
+                    Voir le logement
                   </Link>
                   {/* =========================
                       MODIFIER
@@ -368,9 +378,6 @@ const closePayment = () => {
           MODALE PREMIUM
       ========================= */}
       {showPremium && selectedProperty && (
-        
-
-        
         <div
           className="premium-modal-overlay"
           onClick={closePremium}
@@ -433,8 +440,7 @@ const closePayment = () => {
             </p>
           </div>
         </div>
-        )}
-
+      )}
       {/* =========================
           MODALE PAIEMENT
       ========================= */}
@@ -456,7 +462,9 @@ const closePayment = () => {
               ×
             </button>
             {/* TITRE */}
-            <h2>💳 Paiement Premium</h2>
+            <h2>
+              💳 Paiement Premium
+            </h2>
             <p className="payment-choice-text">
               Vous avez choisi :
             </p>
@@ -487,8 +495,12 @@ const closePayment = () => {
                   W
                 </span>
                 <span className="payment-method-info">
-                  <strong>Wave</strong>
-                  <small>Paiement mobile</small>
+                  <strong>
+                    Wave
+                  </strong>
+                  <small>
+                    Paiement mobile
+                  </small>
                 </span>
                 {paymentMethod === "wave" && (
                   <span className="payment-check">
@@ -504,14 +516,20 @@ const closePayment = () => {
                     ? "payment-method-selected"
                     : ""
                 }`}
-                onClick={() => setPaymentMethod("orange-money")}
+                onClick={() =>
+                  setPaymentMethod("orange-money")
+                }
               >
                 <span className="payment-logo orange-logo">
                   OM
                 </span>
                 <span className="payment-method-info">
-                  <strong>Orange Money</strong>
-                  <small>Paiement mobile</small>
+                  <strong>
+                    Orange Money
+                  </strong>
+                  <small>
+                    Paiement mobile
+                  </small>
                 </span>
                 {paymentMethod === "orange-money" && (
                   <span className="payment-check">
@@ -531,8 +549,6 @@ const closePayment = () => {
                 </strong>
               </div>
             )}
-
-
             {/* =========================
                 BOUTON PAYER
             ========================= */}
@@ -608,8 +624,6 @@ const closePayment = () => {
           </div>
         </div>
       )}
-
-      
       <Footer />
     </>
   );

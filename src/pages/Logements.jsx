@@ -5,6 +5,9 @@ import "../App.css";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { isFurnished } from "../utils/propertyUtils";
+import { FaBed, FaBath } from "react-icons/fa";
+import { FiMaximize2 } from "react-icons/fi";
+
 function Logements() {
   const { properties, loading } = useContext(PropertyContext);
   const [searchParams] = useSearchParams();
@@ -206,89 +209,145 @@ const matchCity =
         ) : (
           sortedProperties.map(
             (property, index) => (
-              <div
-                key={
-                  property.firebaseId ||
-                  property.id ||
-                  index
-                }
-                className="listing-card logement-card"
-              >
-                {/* =========================
-                    IMAGE
-                ========================= */}
-                <div
-                  className="listing-image"
-                  style={{
-                    backgroundImage:
-                      `url(${property.images?.[0]})`
-                  }}
-                >
-                  {/* PRIX */}
-                  <span className="price-badge">
-                    {isFurnished(property.type)
-                      ? `${Number(property.pricePerNight || 0).toLocaleString("fr-FR")} FCFA/nuit`
-                      : `${Number(property.price || 0).toLocaleString("fr-FR")} FCFA/mois`
-                    }
-                  </span>
-                  {/* PREMIUM */}
-                  {property.premium && (
-                    <span className="premium-badge">
-                      ⭐ PREMIUM
-                    </span>
-                  )}
-                  {/* STATUT */}
-                  <span
-                    className={`available-badge ${
-                      property.status === "loue"
-                        ? "status-rented"
-                        : property.status === "attente"
-                        ? "status-pending"
-                        : "status-active"
-                    }`}
-                  >
-                    {property.status === "loue"
-                      ? "🔴 Loué"
-                      : property.status === "attente"
-                      ? "🟡 En attente"
-                      : "🟢 Disponible"
-                    }
-                  </span>
-                </div>
-                {/* =========================
-                    INFORMATIONS
-                ========================= */}
-                <div className="listing-info">
-                  <p className="location">
-                    📍 {property.city}
-                  </p>
-                  <h3>
-                    {property.title}
-                  </h3>
-                  {/* DETAILS */}
-                  <div className="property-details">
-                    <span>
-                      🛏️ {property.rooms || 0} ch.
-                    </span>
-                    <span>
-                      🚿 {property.bathrooms || 0} sdb
-                    </span>
-                    <span>
-                      📐 {property.surface || 0}m²
-                    </span>
-                  </div>
-                  {/* VOIR DETAILS */}
-                  <Link
-                    to={`/property/${
-                      property.firebaseId ||
-                      property.id
-                    }`}
-                    className="details-btn short-stay-btn"
-                  >
-                    Voir détails
-                  </Link>
-                </div>
-              </div>
+           <div
+  key={
+    property.firebaseId ||
+    property.id ||
+    index
+  }
+  className="listing-card logement-card"
+>
+
+  {/* =========================
+      IMAGE
+  ========================= */}
+
+  <Link
+    to={`/property/${
+      property.firebaseId ||
+      property.id
+    }`}
+    className="listing-image-link"
+  >
+
+    <div
+      className="listing-image"
+      style={{
+        backgroundImage:
+          `url(${property.images?.[0]})`
+      }}
+    >
+
+      {/* PRIX */}
+
+      <span className="price-badge">
+
+        {isFurnished(property.type)
+          ? `${Number(
+              property.pricePerNight || 0
+            ).toLocaleString("fr-FR")} FCFA/nuit`
+
+          : `${Number(
+              property.price || 0
+            ).toLocaleString("fr-FR")} FCFA/mois`
+        }
+
+      </span>
+
+      {/* PREMIUM */}
+
+      {property.premium && (
+
+        <span className="premium-badge">
+          ⭐ PREMIUM
+        </span>
+
+      )}
+
+      {/* STATUT */}
+
+      <span
+        className={`available-badge ${
+          property.status === "loue"
+            ? "status-rented"
+            : property.status === "attente"
+            ? "status-pending"
+            : "status-active"
+        }`}
+      >
+
+        {property.status === "loue"
+          ? "🔴 Loué"
+          : property.status === "attente"
+          ? "🟡 En attente"
+          : "🟢 Disponible"
+        }
+
+      </span>
+
+    </div>
+
+  </Link>
+
+
+  {/* =========================
+      INFORMATIONS
+  ========================= */}
+
+  <div className="listing-info">
+
+    <Link
+      to={`/property/${
+        property.firebaseId ||
+        property.id
+      }`}
+      className="listing-info-link"
+    >
+
+      <p className="location">
+        📍 {property.city}
+      </p>
+
+      <h3>
+        {property.title}
+      </h3>
+
+      <div className="property-details">
+
+        <span>
+          <FaBed /> {property.rooms || 0} ch.
+        </span>
+
+        <span>
+          <FaBath /> {property.bathrooms || 0} sdb
+        </span>
+
+        <span>
+          <FiMaximize2 /> {property.surface || 0}m²
+        </span>
+
+      </div>
+
+    </Link>
+
+
+    {/* =========================
+        VOIR LE LOGEMENT
+    ========================= */}
+
+    <Link
+      to={`/property/${
+        property.firebaseId ||
+        property.id
+      }`}
+      className="details-btn short-stay-btn"
+    >
+      Voir le logement
+    </Link>
+
+  </div>
+
+</div>
             )
           )
         )}

@@ -889,3 +889,41 @@
   z-index: 9999 !important;
   pointer-events: auto !important;
 }
+@media (max-width: 768px){
+
+  /* =========================================
+     BOUTONS DES CARTES — MOBILE
+  ========================================= */
+
+  .details-btn{
+    width:100%;
+    height:46px;
+    min-height:46px;
+    padding:10px 16px;
+    border-radius:10px;
+    font-size:14px;
+    font-weight:600;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  /* Cartes classiques de l'accueil */
+  .listings .listing-card .details-btn{
+    width:100%;
+    height:46px;
+    min-height:46px;
+    padding:10px 16px;
+    font-size:14px;
+  }
+
+  /* Cartes de la page Logements */
+  .logement-card .details-btn{
+    width:100%;
+    height:46px;
+    min-height:46px;
+    padding:10px 16px;
+    font-size:14px;
+  }
+
+}
