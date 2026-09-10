@@ -7,6 +7,7 @@ import Footer from "../components/Footer";
 import { isFurnished } from "../utils/propertyUtils";
 import { FaBed, FaBath } from "react-icons/fa";
 import { FiMaximize2 } from "react-icons/fi";
+import SEO from "../components/SEO";
 
 function Logements() {
   const { properties, loading } = useContext(PropertyContext);
@@ -90,6 +91,11 @@ const matchCity =
   if (loading) {
     return (
       <>
+      <SEO
+  title="Logements à louer au Sénégal | Logement221"
+  description="Découvrez les logements à louer au Sénégal sur Logement221 : appartements, maisons, chambres, colocations et logements meublés à Dakar et dans plusieurs villes."
+  url="https://logement221.vercel.app/logements"
+/>
         <Navbar />
         <h2 className="loading-message">
           Chargement des logements...

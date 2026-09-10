@@ -3,6 +3,7 @@ import { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { db } from "../firebase";
+import SEO from "../components/SEO";
 
 import {
   doc,
@@ -80,6 +81,12 @@ await setDoc(
 
   return (
     <>
+ <SEO
+  title="Créer un compte | Logement221"
+  description="Créez votre compte Logement221 pour publier et gérer vos annonces de logements au Sénégal."
+  url="https://logement221.vercel.app/inscription"
+  noindex={true}
+/>
       <Navbar />
 
       <section className="login-section">

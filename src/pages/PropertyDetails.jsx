@@ -7,6 +7,7 @@ import GalleryModal from "../components/GalleryModal";
 import MapLocation from "../components/MapLocation";
 import { db } from "../firebase";
 import { isFurnished } from "../utils/propertyUtils";
+import SEO from "../components/SEO";
 
 import {
   collection,
@@ -26,6 +27,58 @@ import appartement2 from "../assets/images/appartement2.jpg";
 import maison1 from "../assets/images/maison1.jpg";
 import maison2 from "../assets/images/maison2.jpg";
 
+function PropertyStructuredData({ property, reviews, averageRating, seoUrl }) {
+  if (!property) return null;
+
+  const image =
+    property.images?.[0] ||
+    property.image ||
+    "https://logement221.vercel.app/favicon.svg";
+
+  const isShortStay = isFurnished(property.type);
+
+  const price = isShortStay
+    ? property.pricePerNight
+    : property.price;
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: property.title,
+    description:
+      property.description ||
+      `${property.type || "Logement"} à ${property.city}.`,
+    image: [image],
+    url: seoUrl,
+
+    offers: {
+      "@type": "Offer",
+      url: seoUrl,
+      priceCurrency: "XOF",
+      price: price ? Number(price) : 0,
+      availability:
+        property.status === "loue"
+          ? "https://schema.org/SoldOut"
+          : property.status === "attente"
+          ? "https://schema.org/PreOrder"
+          : "https://schema.org/InStock"
+    }
+  };
+
+  if (averageRating && reviews.length > 0) {
+    structuredData.aggregateRating = {
+      "@type": "AggregateRating",
+      ratingValue: Number(averageRating),
+      reviewCount: reviews.length
+    };
+  }
+
+  return (
+    <script type="application/ld+json">
+      {JSON.stringify(structuredData)}
+    </script>
+  );
+}
 
 function PropertyDetails() {
 
@@ -89,18 +142,42 @@ const [reviews,setReviews] = useState([]);
 
 
 if (id.startsWith("popular")) {
-
   const index = id.split("-")[1];
   property = popularProperties[index];
-
 } else {
-
-property = properties.find(
-  (item) =>
-    String(item.firebaseId) === String(id) ||
-    String(item.id) === String(id)
-);
+  property = properties.find(
+    (item) =>
+      String(item.firebaseId) === String(id) ||
+      String(item.id) === String(id)
+  );
 }
+// =========================
+// SEO DU LOGEMENT
+// =========================
+const seoTitle = property
+  ? `${property.title} à ${property.city} | Logement221`
+  : "Logement introuvable | Logement221";
+const seoDescription = property
+  ? `${property.type || "Logement"} à ${property.city}${
+      property.rooms ? `, ${property.rooms} chambre(s)` : ""
+    }${
+      property.surface ? `, ${property.surface} m²` : ""
+    }. ${
+      isFurnished(property.type)
+        ? property.pricePerNight
+          ? `${Number(property.pricePerNight).toLocaleString("fr-FR")} FCFA par nuit`
+          : "Séjour courte durée"
+        : property.price
+          ? `${Number(property.price).toLocaleString("fr-FR")} FCFA par mois`
+          : "Découvrez les détails de ce logement"
+    }. Découvrez les détails sur Logement221.`
+  : "Ce logement n'est plus disponible sur Logement221.";
+const seoUrl = property
+  ? `https://logement221.vercel.app/property/${
+      property.firebaseId || property.id
+    }`
+  : "https://logement221.vercel.app/property/introuvable";
+
 const media = property
 
   ? [
@@ -403,6 +480,7 @@ useEffect(() => {
 if (loading || loadingUser) {
   return (
     <>
+ 
       <Navbar />
 
       <h2 className="loading-message">
@@ -416,7 +494,18 @@ if (loading || loadingUser) {
 
   return (
     <>
-
+   <SEO
+  title={seoTitle}
+  description={seoDescription}
+ image={property?.images?.[0] || property?.image}
+  url={seoUrl}
+/>
+<PropertyStructuredData
+  property={property}
+  reviews={reviews}
+  averageRating={averageRating}
+  seoUrl={seoUrl}
+/>
       <Navbar />
 
 

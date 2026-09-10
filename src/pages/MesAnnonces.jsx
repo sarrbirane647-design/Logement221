@@ -5,6 +5,7 @@ import { PropertyContext } from "../context/PropertyContext";
 import { UserContext } from "../context/UserContext";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import SEO from "../components/SEO";
 import { FaBed, FaBath, FaTrash } from "react-icons/fa";
 import { FiMaximize2 } from "react-icons/fi";
 import { db } from "../firebase";
@@ -93,6 +94,12 @@ function MesAnnonces() {
   }
   return (
     <>
+    <SEO
+  title="Mes annonces | Logement221"
+  description="Gérez vos annonces de logements, consultez vos statistiques et vos options Premium sur Logement221."
+  url="https://logement221.vercel.app/mes-annonces"
+  noindex={true}
+/>
       <Navbar />
       <section className="listings">
         <div className="listings-header">

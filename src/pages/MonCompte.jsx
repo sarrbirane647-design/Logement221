@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import SEO from "../components/SEO";
 
 import { UserContext } from "../context/UserContext";
 
@@ -216,8 +217,15 @@ Chargement du profil...
 }
 
 return (
+  <>
+    <SEO
+      title="Mon compte | Logement221"
+      description="Gérez votre profil et votre compte Logement221."
+      url="https://logement221.vercel.app/mon-compte"
+      noindex={true}
+    />
 
-<>
+    
 
 <Navbar />
 

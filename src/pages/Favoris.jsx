@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import SEO from "../components/SEO";
 import { UserContext } from "../context/UserContext";
 import { PropertyContext } from "../context/PropertyContext";
 import { FaBed, FaBath } from "react-icons/fa";
@@ -18,6 +19,12 @@ function Favoris() {
   );
   return (
     <>
+    <SEO
+  title="Mes favoris | Logement221"
+  description="Retrouvez les logements que vous avez enregistrés dans vos favoris sur Logement221."
+  url="https://logement221.vercel.app/favoris"
+  noindex={true}
+/>
       <Navbar />
       <section className="listings">
         <div className="listings-header">

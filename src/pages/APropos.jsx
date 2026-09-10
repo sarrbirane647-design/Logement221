@@ -1,14 +1,18 @@
 import "../App.css";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-
+import SEO from "../components/SEO";
 
 function APropos() {
 
   return (
 
     <>
-
+<SEO
+  title="À propos de Logement221 | Plateforme immobilière au Sénégal"
+  description="Découvrez Logement221, une plateforme sénégalaise qui facilite la recherche et la publication de logements partout au Sénégal."
+  url="https://logement221.vercel.app/a-propos"
+/>
       <Navbar />
 
 

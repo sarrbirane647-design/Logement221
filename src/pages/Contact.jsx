@@ -3,6 +3,7 @@ import { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { db } from "../firebase";
+import SEO from "../components/SEO";
 
 import {
   collection,
@@ -61,6 +62,11 @@ alert("La fonction démarre");
 
   return (
     <>
+    <SEO
+  title="Contactez Logement221 | Plateforme immobilière au Sénégal"
+  description="Contactez l'équipe Logement221 pour toute question, suggestion ou demande d'aide concernant la recherche et la publication de logements au Sénégal."
+  url="https://logement221.vercel.app/contact"
+/>
       <Navbar />
 
       <section className="contact-section">

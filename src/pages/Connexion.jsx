@@ -3,6 +3,7 @@ import { useState, useContext } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Link, useNavigate } from "react-router-dom";
+import SEO from "../components/SEO";
 
 import {
   signInWithEmailAndPassword,
@@ -88,7 +89,12 @@ function Connexion() {
 
   return (
     <>
-
+<SEO
+  title="Connexion | Logement221"
+  description="Connectez-vous à votre compte Logement221 pour gérer vos annonces de logements au Sénégal."
+  url="https://logement221.vercel.app/connexion"
+  noindex={true}
+/>
       <Navbar />
 
       <section className="login-section">
