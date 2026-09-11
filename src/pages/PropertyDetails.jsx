@@ -80,6 +80,41 @@ function PropertyStructuredData({ property, reviews, averageRating, seoUrl }) {
   );
 }
 
+function PropertyBreadcrumbs({ property, seoUrl }) {
+  if (!property) return null;
+
+  const breadcrumbData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Accueil",
+        item: "https://logement221.vercel.app/"
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Logements",
+        item: "https://logement221.vercel.app/logements"
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: property.title,
+        item: seoUrl
+      }
+    ]
+  };
+
+  return (
+    <script type="application/ld+json">
+      {JSON.stringify(breadcrumbData)}
+    </script>
+  );
+}
+
 function PropertyDetails() {
 
 const [rating, setRating] = useState(0);
@@ -506,6 +541,10 @@ if (loading || loadingUser) {
   averageRating={averageRating}
   seoUrl={seoUrl}
 />
+<PropertyBreadcrumbs
+        property={property}
+        seoUrl={seoUrl}
+      />
       <Navbar />
 
 

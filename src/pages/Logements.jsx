@@ -86,6 +86,26 @@ const matchCity =
     }
   );
   // =========================
+// SEO DYNAMIQUE
+// =========================
+const seoTitle =
+  city && type
+    ? `${type} à louer à ${city} | Logement221`
+    : city
+    ? `Logements à louer à ${city} | Logement221`
+    : type
+    ? `${type}s à louer au Sénégal | Logement221`
+    : "Logements à louer au Sénégal | Logement221";
+
+const seoDescription =
+  city && type
+    ? `Découvrez les ${type.toLowerCase()}s à louer à ${city} sur Logement221. Consultez les annonces disponibles, les prix et les détails des logements.`
+    : city
+    ? `Découvrez les logements à louer à ${city} sur Logement221 : appartements, maisons, chambres, colocations et logements meublés.`
+    : type
+    ? `Découvrez les ${type.toLowerCase()}s à louer au Sénégal sur Logement221. Consultez les annonces disponibles et trouvez votre logement idéal.`
+    : "Découvrez les logements à louer au Sénégal sur Logement221 : appartements, maisons, chambres, colocations et logements meublés à Dakar et dans plusieurs villes.";
+  // =========================
   // CHARGEMENT
   // =========================
   if (loading) {
@@ -107,9 +127,15 @@ const matchCity =
   // =========================
   // AFFICHAGE
   // =========================
-  return (
-    <>
-      <Navbar />
+return (
+  <>
+   <SEO
+  title={seoTitle}
+  description={seoDescription}
+  url="https://logement221.vercel.app/logements"
+/>
+
+    <Navbar />
       {/* =========================
           FILTRES
       ========================= */}
