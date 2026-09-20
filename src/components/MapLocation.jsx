@@ -49,10 +49,20 @@ function MapLocation({ city }) {
     "→",
     position
   );
+  const openDirections = () => {
+  const [lat, lng] = position;
+
+  window.open(
+    `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,
+    "_blank"
+  );
+};
   return (
+  
     <div
-      className="map-container"
-      style={{
+  className="map-container"
+  onClick={openDirections}
+  style={{
         width: "100%",
         height: "400px"
       }}

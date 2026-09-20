@@ -11,7 +11,7 @@ import maison2 from "../assets/images/maison2.jpg";
 
 import { FiMaximize2 } from "react-icons/fi";
 import { FaBed, FaBath } from "react-icons/fa";
-import { TbBuildingEstate } from "react-icons/tb";
+import { FaHouseChimney } from "react-icons/fa6";
 function Listings() {
 
 
@@ -230,7 +230,7 @@ Disponible
 
     <div className="listings-header">
 <h2 className="short-stay-title">
-  <TbBuildingEstate />
+  <FaHouseChimney style={{ color: "#1a8c3f" }} />
   Séjours courte durée
 </h2>
      <Link to="/logements" className="see-all">
