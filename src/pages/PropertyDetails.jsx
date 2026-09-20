@@ -8,7 +8,6 @@ import MapLocation from "../components/MapLocation";
 import { db } from "../firebase";
 import { isFurnished } from "../utils/propertyUtils";
 import SEO from "../components/SEO";
-
 import {
   collection,
   addDoc,
@@ -19,38 +18,40 @@ import {
   doc,
   getDoc
 } from "firebase/firestore";
-
 import { UserContext } from "../context/UserContext";
-
 import appartement1 from "../assets/images/appartement1.jpg";
 import appartement2 from "../assets/images/appartement2.jpg";
 import maison1 from "../assets/images/maison1.jpg";
 import maison2 from "../assets/images/maison2.jpg";
-
-function PropertyStructuredData({ property, reviews, averageRating, seoUrl }) {
+function PropertyStructuredData({
+  property,
+  reviews,
+  averageRating,
+  seoUrl
+}) {
   if (!property) return null;
-
   const image =
     property.images?.[0] ||
     property.image ||
     "https://logement221.vercel.app/favicon.svg";
-
-  const isShortStay = isFurnished(property.type);
-
-  const price = isShortStay
+  const propertyIsSale =
+    property.transactionType === "vente";
+  const isShortStay =
+    isFurnished(property.type);
+  const price = propertyIsSale
+    ? property.price
+    : isShortStay
     ? property.pricePerNight
     : property.price;
-
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: property.title,
     description:
       property.description ||
-      `${property.type || "Logement"} à ${property.city}.`,
+      `${property.type || "Bien immobilier"} à ${property.city}.`,
     image: [image],
     url: seoUrl,
-
     offers: {
       "@type": "Offer",
       url: seoUrl,
@@ -64,7 +65,6 @@ function PropertyStructuredData({ property, reviews, averageRating, seoUrl }) {
           : "https://schema.org/InStock"
     }
   };
-
   if (averageRating && reviews.length > 0) {
     structuredData.aggregateRating = {
       "@type": "AggregateRating",
@@ -72,17 +72,17 @@ function PropertyStructuredData({ property, reviews, averageRating, seoUrl }) {
       reviewCount: reviews.length
     };
   }
-
   return (
     <script type="application/ld+json">
       {JSON.stringify(structuredData)}
     </script>
   );
 }
-
-function PropertyBreadcrumbs({ property, seoUrl }) {
+function PropertyBreadcrumbs({
+  property,
+  seoUrl
+}) {
   if (!property) return null;
-
   const breadcrumbData = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -107,40 +107,39 @@ function PropertyBreadcrumbs({ property, seoUrl }) {
       }
     ]
   };
-
   return (
     <script type="application/ld+json">
       {JSON.stringify(breadcrumbData)}
     </script>
   );
 }
-
 function PropertyDetails() {
-
-const [rating, setRating] = useState(0);
-const [comment, setComment] = useState("");
-
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
   const { id } = useParams();
-const {
-  properties,
-  loading
-} = useContext(PropertyContext);
-
-const {
-  user,
-  favorites,
-  addFavorite,
-  removeFavorite,
-  loadingUser
-} = useContext(UserContext);
-
-  const [isFavorite, setIsFavorite] = useState(false);
-const [currentIndex, setCurrentIndex] = useState(0);
-const [showGallery, setShowGallery] = useState(false);
-const [touchStart, setTouchStart] = useState(null);
-const [touchEnd, setTouchEnd] = useState(null);
-const [reviews,setReviews] = useState([]);
-
+  const {
+    properties,
+    loading
+  } = useContext(PropertyContext);
+  const {
+    user,
+    favorites,
+    addFavorite,
+    removeFavorite,
+    loadingUser
+  } = useContext(UserContext);
+  const [isFavorite, setIsFavorite] =
+    useState(false);
+  const [currentIndex, setCurrentIndex] =
+    useState(0);
+  const [showGallery, setShowGallery] =
+    useState(false);
+  const [touchStart, setTouchStart] =
+    useState(null);
+  const [touchEnd, setTouchEnd] =
+    useState(null);
+  const [reviews, setReviews] =
+    useState([]);
   const popularProperties = [
     {
       title: "Appartement 2 chambres",
@@ -171,779 +170,1001 @@ const [reviews,setReviews] = useState([]);
       image: maison2
     }
   ];
-
-
   let property;
-
-
-if (id.startsWith("popular")) {
-  const index = id.split("-")[1];
-  property = popularProperties[index];
-} else {
-  property = properties.find(
-    (item) =>
-      String(item.firebaseId) === String(id) ||
-      String(item.id) === String(id)
-  );
-}
-// =========================
-// SEO DU LOGEMENT
-// =========================
-const seoTitle = property
-  ? `${property.title} à ${property.city} | Logement221`
-  : "Logement introuvable | Logement221";
-const seoDescription = property
-  ? `${property.type || "Logement"} à ${property.city}${
-      property.rooms ? `, ${property.rooms} chambre(s)` : ""
-    }${
-      property.surface ? `, ${property.surface} m²` : ""
-    }. ${
-      isFurnished(property.type)
-        ? property.pricePerNight
-          ? `${Number(property.pricePerNight).toLocaleString("fr-FR")} FCFA par nuit`
-          : "Séjour courte durée"
-        : property.price
-          ? `${Number(property.price).toLocaleString("fr-FR")} FCFA par mois`
-          : "Découvrez les détails de ce logement"
-    }. Découvrez les détails sur Logement221.`
-  : "Ce logement n'est plus disponible sur Logement221.";
-const seoUrl = property
-  ? `https://logement221.vercel.app/property/${
-      property.firebaseId || property.id
-    }`
-  : "https://logement221.vercel.app/property/introuvable";
-
-const media = property
-
-  ? [
-      ...(property.images || []),
-      ...(property.video ? [property.video] : []),
-    ]
-  : [];
-
- const averageRating = reviews.length
-  ? (
-      reviews.reduce(
-        (total, review) => total + review.rating,
-        0
-      ) / reviews.length
-    ).toFixed(1)
-  : null;
-
- 
+  if (id.startsWith("popular")) {
+    const index = id.split("-")[1];
+    property =
+      popularProperties[index];
+  } else {
+    property = properties.find(
+      (item) =>
+        String(item.firebaseId) ===
+          String(id) ||
+        String(item.id) ===
+          String(id)
+    );
+  }
+  // =========================
+  // TYPE TRANSACTION
+  // =========================
+  const propertyIsSale =
+    property?.transactionType === "vente";
+  const propertyIsTerrain =
+    property?.type === "Terrain";
+  const propertyIsFurnished =
+    property
+      ? isFurnished(property.type)
+      : false;
+  // =========================
+  // SEO DU BIEN
+  // =========================
+  const seoTitle = property
+    ? propertyIsSale
+      ? `${property.title} à vendre à ${property.city} | Logement221`
+      : `${property.title} à ${property.city} | Logement221`
+    : "Logement introuvable | Logement221";
+  const seoDescription = property
+    ? propertyIsSale
+      ? `${property.type || "Bien immobilier"} à vendre à ${property.city}${
+          property.neighborhood
+            ? `, ${property.neighborhood}`
+            : ""
+        }${
+          property.surface
+            ? `, ${property.surface} ${
+                property.surfaceUnit || "m²"
+              }`
+            : ""
+        }. ${
+          property.price
+            ? `${Number(
+                property.price
+              ).toLocaleString(
+                "fr-FR"
+              )} FCFA`
+            : "Découvrez les détails de ce bien"
+        }. Découvrez cette annonce sur Logement221.`
+      : `${property.type || "Logement"} à ${property.city}${
+          property.rooms
+            ? `, ${property.rooms} chambre(s)`
+            : ""
+        }${
+          property.surface
+            ? `, ${property.surface} m²`
+            : ""
+        }. ${
+          propertyIsFurnished
+            ? property.pricePerNight
+              ? `${Number(
+                  property.pricePerNight
+                ).toLocaleString(
+                  "fr-FR"
+                )} FCFA par nuit`
+              : "Séjour courte durée"
+            : property.price
+            ? `${Number(
+                property.price
+              ).toLocaleString(
+                "fr-FR"
+              )} FCFA par mois`
+            : "Découvrez les détails de ce logement"
+        }. Découvrez les détails sur Logement221.`
+    : "Ce logement n'est plus disponible sur Logement221.";
+  const seoUrl = property
+    ? `https://logement221.vercel.app/property/${
+        property.firebaseId ||
+        property.id
+      }`
+    : "https://logement221.vercel.app/property/introuvable";
+  // =========================
+  // MEDIA
+  // =========================
+  const media = property
+    ? [
+        ...(property.images || []),
+        ...(property.video
+          ? [property.video]
+          : [])
+      ]
+    : [];
+  const averageRating =
+    reviews.length
+      ? (
+          reviews.reduce(
+            (total, review) =>
+              total + review.rating,
+            0
+          ) / reviews.length
+        ).toFixed(1)
+      : null;
+  // =========================
+  // GALERIE
+  // =========================
   const nextMedia = () => {
-
-  if (media.length === 0) return;
-
-  setCurrentIndex((prev) =>
-    prev === media.length - 1 ? 0 : prev + 1
-  );
-
-};
-
-const previousMedia = () => {
-
-  if (media.length === 0) return;
-
-  setCurrentIndex((prev) =>
-    prev === 0 ? media.length - 1 : prev - 1
-  );
-
-};
-
-useEffect(() => {
-
-  if (property) {
-
-    const alreadyFavorite = favorites.some(
-      item => item.firebaseId === property.firebaseId
+    if (media.length === 0) return;
+    setCurrentIndex((prev) =>
+      prev === media.length - 1
+        ? 0
+        : prev + 1
     );
-
-    setIsFavorite(alreadyFavorite);
-
-  }
-
-}, [favorites, property]);
-
-
-useEffect(()=>{
-
-const loadReviews = async()=>{
-
-const q = query(
- collection(db,"reviews"),
- where("propertyId","==",property.firebaseId)
-);
-
-
-const snapshot = await getDocs(q);
-
-
-setReviews(
- snapshot.docs.map(doc=>doc.data())
-);
-
-
-};
-
-
-if(property){
- loadReviews();
-}
-
-},[property]);
-
-
-
-const toggleFavorite = async () => {
-if (!user || user.isAnonymous) {
-  alert("Veuillez vous connecter pour ajouter ce logement aux favoris.");
-  return;
-}
-
-  console.log("LOGEMENT FAVORI :", property);
-
-  if (isFavorite) {
-    await removeFavorite(property);
-    setIsFavorite(false);
-  } else {
-    await addFavorite(property);
-    setIsFavorite(true);
-  }
-
-};
-
-
-const handleTouchStart = (e) => {
-  setTouchStart(e.touches[0].clientX);
-};
-
-
-const handleTouchMove = (e) => {
-  setTouchEnd(e.touches[0].clientX);
-};
-
-
-const handleTouchEnd = () => {
-
-  const distance = touchStart - touchEnd;
-
-  // Swipe vers la gauche ➡️ photo suivante
-  if (distance > 50) {
-    nextMedia();
-  }
-
-  // Swipe vers la droite ⬅️ photo précédente
-  if (distance < -50) {
-    previousMedia();
-  }
-
-  // Reset
-  setTouchStart(0);
-  setTouchEnd(0);
-
-};
-
-const addReview = async () => {
-
-  if (!user || user.isAnonymous) {
-  alert("Veuillez vous connecter pour ajouter ce logement aux favoris.");
-  return;
-}
-  
-  if(rating === 0 || comment.trim() === ""){
-    alert("Veuillez mettre une note et un avis");
-    return;
-  }
-
-
-  try {
-
-  let userName = "Visiteur";
-
-if (user) {
-
-  const userRef = doc(
-    db,
-    "users",
-    user.uid
-  );
-
-  const userSnap = await getDoc(userRef);
-
-  if (userSnap.exists()) {
-
-    userName =
-      userSnap.data().name ||
-      userSnap.data().displayName ||
-      user.email;
-
-  } else {
-
-    userName = user.displayName || user.email;
-
-  }
-
-}
-    const newReview = {
-
-      propertyId: property.firebaseId,
-
-      rating: rating,
-
-      comment: comment,
-
-      date: new Date().toLocaleDateString(),
-
-      name: userName
-
-    };
-
-
-    await addDoc(
-      collection(db,"reviews"),
-      newReview
-    );
-
-    setReviews([
-  ...reviews,
-  newReview
-]);
-
-    setRating(0);
-    setComment("");
-
-
-    alert("Merci pour votre avis ⭐");
-
-
-  } catch(error){
-
-    console.error(
-      "Erreur ajout avis :",
-      error
-    );
-
-    alert(
-      "Impossible d'ajouter l'avis"
-    );
-
-  }
-
-};
-
-useEffect(() => {
-
-  const handleKeyDown = (e) => {
-
-    if (e.key === "Escape") {
-      setShowGallery(false);
-    }
-
-    if (e.key === "ArrowRight") {
-      nextMedia();
-    }
-
-    if (e.key === "ArrowLeft") {
-      previousMedia();
-    }
-
   };
-
-  window.addEventListener("keydown", handleKeyDown);
-
-  return () =>
-    window.removeEventListener(
+  const previousMedia = () => {
+    if (media.length === 0) return;
+    setCurrentIndex((prev) =>
+      prev === 0
+        ? media.length - 1
+        : prev - 1
+    );
+  };
+  // =========================
+  // FAVORIS
+  // =========================
+  useEffect(() => {
+    if (property) {
+      const alreadyFavorite =
+        favorites.some(
+          (item) =>
+            item.firebaseId ===
+            property.firebaseId
+        );
+      setIsFavorite(
+        alreadyFavorite
+      );
+    }
+  }, [favorites, property]);
+  // =========================
+  // AVIS
+  // =========================
+  useEffect(() => {
+    const loadReviews =
+      async () => {
+        if (!property?.firebaseId) {
+          return;
+        }
+        const q = query(
+          collection(
+            db,
+            "reviews"
+          ),
+          where(
+            "propertyId",
+            "==",
+            property.firebaseId
+          )
+        );
+        const snapshot =
+          await getDocs(q);
+        setReviews(
+          snapshot.docs.map(
+            (doc) => doc.data()
+          )
+        );
+      };
+    if (property) {
+      loadReviews();
+    }
+  }, [property]);
+  // =========================
+  // FAVORI
+  // =========================
+  const toggleFavorite =
+    async () => {
+      if (
+        !user ||
+        user.isAnonymous
+      ) {
+        alert(
+          "Veuillez vous connecter pour ajouter ce logement aux favoris."
+        );
+        return;
+      }
+      if (isFavorite) {
+        await removeFavorite(
+          property
+        );
+        setIsFavorite(false);
+      } else {
+        await addFavorite(
+          property
+        );
+        setIsFavorite(true);
+      }
+    };
+  // =========================
+  // SWIPE
+  // =========================
+  const handleTouchStart =
+    (e) => {
+      setTouchStart(
+        e.touches[0].clientX
+      );
+    };
+  const handleTouchMove =
+    (e) => {
+      setTouchEnd(
+        e.touches[0].clientX
+      );
+    };
+  const handleTouchEnd =
+    () => {
+      if (
+        touchStart === null ||
+        touchEnd === null
+      ) {
+        return;
+      }
+      const distance =
+        touchStart - touchEnd;
+      if (distance > 50) {
+        nextMedia();
+      }
+      if (distance < -50) {
+        previousMedia();
+      }
+      setTouchStart(0);
+      setTouchEnd(0);
+    };
+  // =========================
+  // AJOUT AVIS
+  // =========================
+  const addReview =
+    async () => {
+      if (
+        !user ||
+        user.isAnonymous
+      ) {
+        alert(
+          "Veuillez vous connecter pour ajouter un avis."
+        );
+        return;
+      }
+      if (
+        rating === 0 ||
+        comment.trim() === ""
+      ) {
+        alert(
+          "Veuillez mettre une note et un avis"
+        );
+        return;
+      }
+      try {
+        let userName =
+          "Visiteur";
+        if (user) {
+          const userRef =
+            doc(
+              db,
+              "users",
+              user.uid
+            );
+          const userSnap =
+            await getDoc(
+              userRef
+            );
+          if (
+            userSnap.exists()
+          ) {
+            userName =
+              userSnap.data().name ||
+              userSnap.data()
+                .displayName ||
+              user.email;
+          } else {
+            userName =
+              user.displayName ||
+              user.email;
+          }
+        }
+        const newReview = {
+          propertyId:
+            property.firebaseId,
+          rating: rating,
+          comment: comment,
+          date:
+            new Date().toLocaleDateString(),
+          name: userName
+        };
+        await addDoc(
+          collection(
+            db,
+            "reviews"
+          ),
+          newReview
+        );
+        setReviews([
+          ...reviews,
+          newReview
+        ]);
+        setRating(0);
+        setComment("");
+        alert(
+          "Merci pour votre avis ⭐"
+        );
+      } catch (error) {
+        console.error(
+          "Erreur ajout avis :",
+          error
+        );
+        alert(
+          "Impossible d'ajouter l'avis"
+        );
+      }
+    };
+  // =========================
+  // CLAVIER
+  // =========================
+  useEffect(() => {
+    const handleKeyDown =
+      (e) => {
+        if (e.key === "Escape") {
+          setShowGallery(false);
+        }
+        if (
+          e.key === "ArrowRight"
+        ) {
+          nextMedia();
+        }
+        if (
+          e.key === "ArrowLeft"
+        ) {
+          previousMedia();
+        }
+      };
+    window.addEventListener(
       "keydown",
       handleKeyDown
     );
-
-}, [currentIndex]);
-
-useEffect(() => {
-
-  const addView = async () => {
-
-    console.log("AJOUT VUE :", property.firebaseId);
-
-    if (!property?.firebaseId) return;
-
-    const viewKey = `view-${property.firebaseId}`;
-
-    const lastView = localStorage.getItem(viewKey);
-
-    // Bloque les vues répétées pendant 24h
-    if (lastView) {
-
-      const timePassed =
-        Date.now() - Number(lastView);
-
-      const oneDay = 24 * 60 * 60 * 1000;
-
-      if (timePassed < oneDay) {
-        return;
-      }
-
+    return () =>
+      window.removeEventListener(
+        "keydown",
+        handleKeyDown
+      );
+  }, [currentIndex, media.length]);
+  // =========================
+  // COMPTEUR DE VUES
+  // =========================
+  useEffect(() => {
+    const addView =
+      async () => {
+        if (!property?.firebaseId) {
+          return;
+        }
+        const viewKey =
+          `view-${property.firebaseId}`;
+        const lastView =
+          localStorage.getItem(
+            viewKey
+          );
+        if (lastView) {
+          const timePassed =
+            Date.now() -
+            Number(lastView);
+          const oneDay =
+            24 *
+            60 *
+            60 *
+            1000;
+          if (
+            timePassed <
+            oneDay
+          ) {
+            return;
+          }
+        }
+        await addDoc(
+          collection(
+            db,
+            "views"
+          ),
+          {
+            propertyId:
+              property.firebaseId,
+            date:
+              serverTimestamp()
+          }
+        );
+        localStorage.setItem(
+          viewKey,
+          Date.now().toString()
+        );
+      };
+    if (property) {
+      addView();
     }
-
-
-    await addDoc(
-      collection(db,"views"),
-      {
-        propertyId: property.firebaseId,
-        date: serverTimestamp()
-      }
+  }, [property]);
+  // =========================
+  // CHARGEMENT
+  // =========================
+  if (
+    loading ||
+    loadingUser
+  ) {
+    return (
+      <>
+        <Navbar />
+        <h2 className="loading-message">
+          Chargement du logement...
+        </h2>
+        <Footer />
+      </>
     );
-
-
-    localStorage.setItem(
-      viewKey,
-      Date.now().toString()
-    );
-
-
-  };
-
-
-  if(property){
-    addView();
   }
-
-
-},[property]);
-
-if (loading || loadingUser) {
   return (
     <>
- 
-      <Navbar />
-
-      <h2 className="loading-message">
-        Chargement du logement...
-      </h2>
-
-      <Footer />
-    </>
-  );
-}
-
-  return (
-    <>
-   <SEO
-  title={seoTitle}
-  description={seoDescription}
- image={property?.images?.[0] || property?.image}
-  url={seoUrl}
-/>
-<PropertyStructuredData
-  property={property}
-  reviews={reviews}
-  averageRating={averageRating}
-  seoUrl={seoUrl}
-/>
-<PropertyBreadcrumbs
+      <SEO
+        title={seoTitle}
+        description={seoDescription}
+        image={
+          property?.images?.[0] ||
+          property?.image
+        }
+        url={seoUrl}
+      />
+      <PropertyStructuredData
+        property={property}
+        reviews={reviews}
+        averageRating={averageRating}
+        seoUrl={seoUrl}
+      />
+      <PropertyBreadcrumbs
         property={property}
         seoUrl={seoUrl}
       />
       <Navbar />
-
-
       <section className="property-page">
-
-
         {property ? (
-
           <>
-
-<div className="property-gallery">
-
-<div className="gallery-counter">
-  {currentIndex + 1} / {media.length}
-</div>
-
-  <button
-    className="gallery-arrow left"
-    onClick={previousMedia}
-  >
-    ◀
-  </button>
-
-  {media.length > 0 &&
-  media[currentIndex]?.includes("/video/") ? (
-
-  <video
-  className="property-detail-image"
-  controls
-  autoPlay
-  muted
-  playsInline
-  onError={(e) => {
-   
-  }}
->
-  <source
-    src={media[currentIndex]}
-    type="video/mp4"
-  />
-
-  Votre navigateur ne supporte pas cette vidéo.
-</video>
-
-  ) : (
-
- <img
-  className="property-detail-image"
-  src={
-    media.length > 0
-      ? media[currentIndex]
-      : property.image
-  }
-  alt={property.title}
-  onClick={() => setShowGallery(true)}
-  onTouchStart={handleTouchStart}
-  onTouchMove={handleTouchMove}
-  onTouchEnd={handleTouchEnd}
-/>
-
-  )}
-
-  <button
-    className="gallery-arrow right"
-    onClick={nextMedia}
-  >
-    ▶
-  </button>
-
-</div>
-
-<div className="gallery-thumbnails">
-
-  {media.map((item, index) => (
-
-    item.includes(".mp4") ? (
-
-      <div
-        key={index}
-        className={
-          currentIndex === index
-            ? "gallery-thumb active-thumb"
-            : "gallery-thumb"
-        }
-        onClick={() => setCurrentIndex(index)}
-      >
-        🎥
-      </div>
-
-    ) : (
-
-      <img
-        key={index}
-        src={item}
-        alt={`Photo ${index + 1}`}
-        className={
-          currentIndex === index
-            ? "gallery-thumb active-thumb"
-            : "gallery-thumb"
-        }
-        onClick={() => setCurrentIndex(index)}
-      />
-
-    )
-
-  ))}
-
-</div>
-
+            {/* =========================
+                GALERIE
+            ========================= */}
+            <div className="property-gallery">
+              <div className="gallery-counter">
+                {currentIndex + 1} /{" "}
+                {media.length}
+              </div>
+              <button
+                className="gallery-arrow left"
+                onClick={previousMedia}
+              >
+                ◀️
+              </button>
+              {media.length > 0 &&
+              media[currentIndex]?.includes(
+                "/video/"
+              ) ? (
+                <video
+                  className="property-detail-image"
+                  controls
+                  autoPlay
+                  muted
+                  playsInline
+                >
+                  <source
+                    src={
+                      media[currentIndex]
+                    }
+                    type="video/mp4"
+                  />
+                  Votre navigateur ne supporte pas la vidéo.
+                </video>
+              ) : (
+                <img
+                  className="property-detail-image"
+                  src={
+                    media.length > 0
+                      ? media[
+                          currentIndex
+                        ]
+                      : property.image
+                  }
+                  alt={property.title}
+                  onClick={() =>
+                    setShowGallery(
+                      true
+                    )
+                  }
+                  onTouchStart={
+                    handleTouchStart
+                  }
+                  onTouchMove={
+                    handleTouchMove
+                  }
+                  onTouchEnd={
+                    handleTouchEnd
+                  }
+                />
+              )}
+              <button
+                className="gallery-arrow right"
+                onClick={nextMedia}
+              >
+                ▶️
+              </button>
+            </div>
+            {/* =========================
+                MINIATURES
+            ========================= */}
+            <div className="gallery-thumbnails">
+              {media.map(
+                (item, index) => (
+                  item.includes(
+                    ".mp4"
+                  ) ? (
+                    <div
+                      key={index}
+                      className={
+                        currentIndex ===
+                        index
+                          ? "gallery-thumb active-thumb"
+                          : "gallery-thumb"
+                      }
+                      onClick={() =>
+                        setCurrentIndex(
+                          index
+                        )
+                      }
+                    >
+                      🎥
+                    </div>
+                  ) : (
+                    <img
+                      key={index}
+                      src={item}
+                      alt={`Photo ${
+                        index + 1
+                      }`}
+                      className={
+                        currentIndex ===
+                        index
+                          ? "gallery-thumb active-thumb"
+                          : "gallery-thumb"
+                      }
+                      onClick={() =>
+                        setCurrentIndex(
+                          index
+                        )
+                      }
+                    />
+                  )
+                )
+              )}
+            </div>
+            {/* =========================
+                CONTENU
+            ========================= */}
             <div className="property-detail-content">
-
-<span
-  className={`available-badge ${
-    property.status === "loue"
-      ? "status-rented"
-      : property.status === "attente"
-      ? "status-pending"
-      : "status-active"
-  }`}
->
-  {property.status === "loue"
-    ? "🔴 Loué"
-    : property.status === "attente"
-    ? "🟡 En attente"
-    : "🟢 Disponible"}
-</span>
-
-
+              {/* TRANSACTION */}
+              <span
+               className={`transaction-badge ${
+  propertyIsSale ? "sale-badge" : "rental-badge"
+}`}
+              >
+                {propertyIsSale
+                  ? "🏷️ À vendre"
+                  : "🏠 À louer"}
+              </span>
+              {/* STATUT */}
+              <span
+                className={`available-badge ${
+                  property.status === "loue"
+                    ? "status-rented"
+                    : property.status ===
+                      "attente"
+                    ? "status-pending"
+                    : "status-active"
+                }`}
+              >
+                {property.status ===
+                "loue"
+                  ? "🔴 Loué"
+                  : property.status ===
+                    "attente"
+                  ? "🟡 En attente"
+                  : "🟢 Disponible"}
+              </span>
               <h1>
                 {property.title}
               </h1>
-
-{averageRating && (
-  <p className="average-rating">
-    ⭐ {averageRating}/5 ({reviews.length} avis)
-  </p>
-)}
-
+              {averageRating && (
+                <p className="average-rating">
+                  ⭐ {averageRating}/5 (
+                  {reviews.length} avis)
+                </p>
+              )}
               <button
                 className="favorite-btn"
-                onClick={toggleFavorite}
-              >
-                {isFavorite 
-                  ? "❤️ Favori" 
-                  : "🤍 Ajouter aux favoris"
+                onClick={
+                  toggleFavorite
                 }
+              >
+                {isFavorite
+                  ? "❤️ Favori"
+                  : "🤍 Ajouter aux favoris"}
               </button>
-
-
-            <h2 className="property-price">
-
-  {isFurnished(property.type)
-    ? `${property.pricePerNight} FCFA / nuit`
-    : `${property.price} FCFA / mois`
-  }
-
-</h2>
-
-
+              {/* =========================
+                  PRIX
+              ========================= */}
+              <h2 className="property-price">
+                {propertyIsSale
+                  ? `${Number(
+                      property.price || 0
+                    ).toLocaleString(
+                      "fr-FR"
+                    )} FCFA`
+                  : propertyIsFurnished
+                  ? `${Number(
+                      property.pricePerNight ||
+                        0
+                    ).toLocaleString(
+                      "fr-FR"
+                    )} FCFA / nuit`
+                  : `${Number(
+                      property.price || 0
+                    ).toLocaleString(
+                      "fr-FR"
+                    )} FCFA / mois`
+                }
+              </h2>
+              {/* =========================
+                  LOCALISATION
+              ========================= */}
               <p className="property-city">
                 📍 {property.city}
+                {property.neighborhood
+                  ? ` — ${property.neighborhood}`
+                  : ""}
               </p>
-
-
-
-<MapLocation city={property.city} />
-
-             <div className="property-features">
-
-  <div>🛏️ {property.rooms} chambre(s)</div>
-
-  <div>🚿 {property.bathrooms} salle(s) de bain</div>
-
-  <div>📐 {property.surface} m²</div>
-
-  {property.parking && (
-    <div>🚗 Parking</div>
-  )}
-
-</div>
-
-
-              <h3>Description</h3>
-
-
-             <p className="property-description">
-  {property.description}
-</p>
-
-<div className="review-box">
-
-  <h3>⭐ Donner votre avis</h3>
-
-  <div className="stars">
-
-    {[1,2,3,4,5].map((star)=>(
-
-      <span
-        key={star}
-        onClick={() => setRating(star)}
-        style={{
-          cursor:"pointer",
-          fontSize:"30px",
-          color: star <= rating ? "gold" : "#ccc"
-        }}
-      >
-        ★
-      </span>
-
-    ))}
-
-  </div>
-
-
-  <textarea
-    placeholder="Écrivez votre avis..."
-    value={comment}
-    onChange={(e)=>setComment(e.target.value)}
-  />
-
-<button
-  onClick={() => {
-    addReview();
-  }}
->
-  Publier mon avis
-</button>
-
-
-</div>
-{reviews.length > 0 && (
-
-  <div className="reviews-list">
-
-    <h3>⭐ Avis des utilisateurs</h3>
-
-   {reviews.map((review, index) => (
-<div key={index} className="review-card">
-
-<h4>
-👤 {review.name || "Utilisateur"}
-</h4>
-
-<p>
-  {"⭐".repeat(review.rating)}
-</p>
-
-<p>
-{review.comment}
-</p>
-
-<small>
-{review.date}
-</small>
-
-</div>
-
-    ))}
-
-  </div>
-
-)}
-
-{["Appartement meublé", "Villa meublée", "Chambre meublée"].includes(property.type) && (
-
-  <div className="property-equipements">
-
-    <h3>🛎️ Équipements</h3>
-
-    {property.wifi && <p>📶 Wi-Fi</p>}
-
-    {property.climatisation && <p>❄️ Climatisation</p>}
-
-    {property.cuisine && <p>🍳 Cuisine équipée</p>}
-
-    {property.parking && <p>🚗 Parking</p>}
-
-    {property.piscine && <p>🏊 Piscine</p>}
-
-    {property.pricePerNight && (
-      <p>💰 {property.pricePerNight} FCFA / nuit</p>
-    )}
-
-    {property.minNights && (
-      <p>🌙 Minimum {property.minNights} nuit(s)</p>
-    )}
-
-  </div>
-
-)}
-<div className="owner-box">
-  <h3>
-    👤 Propriétaire
-  </h3>
-
-  <p>
-    {property.owner?.name || "Propriétaire"}
-  </p>
-
-  <a
-  className="contact-owner-btn"
-  href={`https://wa.me/${property.owner?.phone}?text=${encodeURIComponent(
-    `Bonjour, je suis intéressé par votre logement "${property.title}". ${
-      property.status === "loue"
-        ? "Je vois que ce logement est actuellement loué. Avez-vous un autre logement disponible ?"
-        : "Est-il toujours disponible ?"
-    }`
-  )}`}
-  target="_blank"
-  rel="noopener noreferrer"
->
-  💬 Contacter sur WhatsApp
-</a>
-
-</div>
-
-
+              <MapLocation
+                city={property.city}
+              />
+              {/* =========================
+                  CARACTÉRISTIQUES
+              ========================= */}
+              <div className="property-features">
+                {!propertyIsTerrain && (
+                  <>
+                    <div>
+                      🛏️{" "}
+                      {property.rooms ||
+                        0}{" "}
+                      chambre(s)
+                    </div>
+                    <div>
+                      🚿{" "}
+                      {property.bathrooms ||
+                        0}{" "}
+                      salle(s) de bain
+                    </div>
+                  </>
+                )}
+                {property.surface && (
+                  <div>
+                    📐{" "}
+                    {property.surface}{" "}
+                    {property.surfaceUnit ||
+                      "m²"}
+                  </div>
+                )}
+                {property.parking && (
+                  <div>
+                    🚗 Parking
+                  </div>
+                )}
+              </div>
+              {/* =========================
+                  DOCUMENT
+              ========================= */}
+              {propertyIsSale &&
+                property.documentType && (
+                <div className="property-document">
+                  <h3>
+                    📄 Document du bien
+                  </h3>
+                  <p>
+                    {property.documentType}
+                  </p>
+                </div>
+              )}
+              {/* =========================
+                  DESCRIPTION
+              ========================= */}
+              <h3>
+                Description
+              </h3>
+              <p className="property-description">
+                {property.description}
+              </p>
+              {/* =========================
+                  AVIS
+              ========================= */}
+              <div className="review-box">
+                <h3>
+                  ⭐ Donner votre avis
+                </h3>
+                <div className="stars">
+                  {[1, 2, 3, 4, 5].map(
+                    (star) => (
+                      <span
+                        key={star}
+                        onClick={() =>
+                          setRating(
+                            star
+                          )
+                        }
+                        style={{
+                          cursor:
+                            "pointer",
+                          fontSize:
+                            "30px",
+                          color:
+                            star <=
+                            rating
+                              ? "gold"
+                              : "#ccc"
+                        }}
+                      >
+                        ★
+                      </span>
+                    )
+                  )}
+                </div>
+                <textarea
+                  placeholder="Écrivez votre avis..."
+                  value={comment}
+                  onChange={(e) =>
+                    setComment(
+                      e.target.value
+                    )
+                  }
+                />
+                <button
+                  onClick={() => {
+                    addReview();
+                  }}
+                >
+                  Publier mon avis
+                </button>
+              </div>
+              {/* =========================
+                  LISTE AVIS
+              ========================= */}
+              {reviews.length > 0 && (
+                <div className="reviews-list">
+                  <h3>
+                    ⭐ Avis des utilisateurs
+                  </h3>
+                  {reviews.map(
+                    (
+                      review,
+                      index
+                    ) => (
+                      <div
+                        key={index}
+                        className="review-card"
+                      >
+                        <h4>
+                          👤{" "}
+                          {review.name ||
+                            "Utilisateur"}
+                        </h4>
+                        <p>
+                          {"⭐".repeat(
+                            review.rating
+                          )}
+                        </p>
+                        <p>
+                          {
+                            review.comment
+                          }
+                        </p>
+                        <small>
+                          {
+                            review.date
+                          }
+                        </small>
+                      </div>
+                    )
+                  )}
+                </div>
+              )}
+              {/* =========================
+                  ÉQUIPEMENTS
+              ========================= */}
+              {[
+                "Appartement meublé",
+                "Villa meublée",
+                "Chambre meublée"
+              ].includes(
+                property.type
+              ) && (
+                <div className="property-equipements">
+                  <h3>
+                    🛎️ Équipements
+                  </h3>
+                  {property.wifi && (
+                    <p>
+                      📶 Wi-Fi
+                    </p>
+                  )}
+                  {property.climatisation && (
+                    <p>
+                      ❄️ Climatisation
+                    </p>
+                  )}
+                  {property.cuisine && (
+                    <p>
+                      🍳 Cuisine équipée
+                    </p>
+                  )}
+                  {property.parking && (
+                    <p>
+                      🚗 Parking
+                    </p>
+                  )}
+                  {property.piscine && (
+                    <p>
+                      🏊 Piscine
+                    </p>
+                  )}
+                  {property.pricePerNight && (
+                    <p>
+                      💰{" "}
+                      {
+                        property.pricePerNight
+                      }{" "}
+                      FCFA / nuit
+                    </p>
+                  )}
+                  {property.minNights && (
+                    <p>
+                      🌙 Minimum{" "}
+                      {
+                        property.minNights
+                      }{" "}
+                      nuit(s)
+                    </p>
+                  )}
+                </div>
+              )}
+              {/* =========================
+                  PROPRIÉTAIRE
+              ========================= */}
+              <div className="owner-box">
+                <h3>
+                  👤 Propriétaire
+                </h3>
+                <p>
+                  {property.owner
+                    ?.name ||
+                    "Propriétaire"}
+                </p>
+                <a
+                  className="contact-owner-btn"
+                  href={`https://wa.me/${
+                    property.owner
+                      ?.phone
+                  }?text=${encodeURIComponent(
+                    propertyIsSale
+                      ? `Bonjour, je suis intéressé par votre bien à vendre "${property.title}". Est-il toujours disponible ?`
+                      : `Bonjour, je suis intéressé par votre logement "${property.title}". ${
+                          property.status ===
+                          "loue"
+                            ? "Je vois que ce logement est actuellement loué. Avez-vous un autre logement disponible ?"
+                            : "Est-il toujours disponible ?"
+                        }`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  💬 Contacter sur WhatsApp
+                </a>
+              </div>
             </div>
-
           </>
-
-
         ) : (
-
           <h2>
             Logement introuvable
           </h2>
-
         )}
-
-<GalleryModal
-  showGallery={showGallery}
-  setShowGallery={setShowGallery}
-  media={media}
-  currentIndex={currentIndex}
-  setCurrentIndex={setCurrentIndex}
-/>
-
+        {/* =========================
+            GALERIE MODALE
+        ========================= */}
+        <GalleryModal
+          showGallery={
+            showGallery
+          }
+          setShowGallery={
+            setShowGallery
+          }
+          media={media}
+          currentIndex={
+            currentIndex
+          }
+          setCurrentIndex={
+            setCurrentIndex
+          }
+        />
+        {/* =========================
+            BIENS SIMILAIRES
+        ========================= */}
         <h2 className="similar-title">
-          Logements similaires
+          {propertyIsSale
+            ? "Biens similaires"
+            : "Logements similaires"}
         </h2>
-
-
         <div className="similar-properties">
-
-{property && properties
-.filter(
-  (item) => item.firebaseId !== property.firebaseId
-)
-.slice(0,4)
-.map((item)=>(
-
-<Link
-  to={`/property/${item.firebaseId}`}
-  className="similar-card"
-  key={item.firebaseId}
->
-
-<img
-  src={item.images?.[0]}
-  alt={item.title}
-/>
-
-<div className="similar-info">
-
-<h3>
-{item.title}
-</h3>
-
-<p>
-📍 {item.city}
-</p>
-
-<span>
-{["Appartement meublé", "Villa meublée", "Chambre meublée"].includes(item.type)
-? `${item.pricePerNight} FCFA/nuit`
-: `${item.price} FCFA/mois`
-}
-</span>
-
-</div>
-
-</Link>
-
-))}
-
-
-
+          {property &&
+            properties
+              .filter(
+                (item) =>
+                  item.firebaseId !==
+                    property.firebaseId &&
+                  (
+                    item.transactionType ===
+                    property.transactionType
+                  )
+              )
+              .slice(0, 4)
+              .map((item) => (
+                <Link
+                  to={`/property/${item.firebaseId}`}
+                  className="similar-card"
+                  key={
+                    item.firebaseId
+                  }
+                >
+                  <img
+                    src={
+                      item.images?.[0]
+                    }
+                    alt={
+                      item.title
+                    }
+                  />
+                  <div className="similar-info">
+                    <h3>
+                      {item.title}
+                    </h3>
+                    <p>
+                      📍 {item.city}
+                    </p>
+                    <span>
+                      {item.transactionType ===
+                      "vente"
+                        ? `${Number(
+                            item.price ||
+                              0
+                          ).toLocaleString(
+                            "fr-FR"
+                          )} FCFA`
+                        : [
+                            "Appartement meublé",
+                            "Villa meublée",
+                            "Chambre meublée"
+                          ].includes(
+                            item.type
+                          )
+                        ? `${Number(
+                            item.pricePerNight ||
+                              0
+                          ).toLocaleString(
+                            "fr-FR"
+                          )} FCFA/nuit`
+                        : `${Number(
+                            item.price ||
+                              0
+                          ).toLocaleString(
+                            "fr-FR"
+                          )} FCFA/mois`
+                      }
+                    </span>
+                  </div>
+                </Link>
+              ))}
         </div>
-
-
       </section>
-
-
       <Footer />
-
     </>
   );
 }
-
-
 export default PropertyDetails;

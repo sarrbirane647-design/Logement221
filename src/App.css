@@ -2819,3 +2819,44 @@ html{
   background:#0b5726;
   transform:translateY(-2px);
 }
+/* =========================
+   BADGES TRANSACTION
+========================= */
+
+.transaction-badge {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  padding: 7px 12px;
+  border-radius: 20px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  z-index: 4;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+.rental-badge {
+  background: #1a8c3f;
+}
+
+.sale-badge {
+  background: #2563eb;
+}
+
+@media (max-width: 768px) {
+  .transaction-badge {
+    top: 10px;
+    left: 10px;
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 380px) {
+  .transaction-badge {
+    padding: 5px 8px;
+    font-size: 10px;
+  }
+}
