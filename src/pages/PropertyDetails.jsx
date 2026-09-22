@@ -967,65 +967,117 @@ function PropertyDetails() {
                   )}
                 </div>
               )}
-              {/* =========================
-                  ÉQUIPEMENTS
-              ========================= */}
-              {[
-                "Appartement meublé",
-                "Villa meublée",
-                "Chambre meublée"
-              ].includes(
-                property.type
-              ) && (
-                <div className="property-equipements">
-                  <h3>
-                    🛎️ Équipements
-                  </h3>
-                  {property.wifi && (
-                    <p>
-                      📶 Wi-Fi
-                    </p>
-                  )}
-                  {property.climatisation && (
-                    <p>
-                      ❄️ Climatisation
-                    </p>
-                  )}
-                  {property.cuisine && (
-                    <p>
-                      🍳 Cuisine équipée
-                    </p>
-                  )}
-                  {property.parking && (
-                    <p>
-                      🚗 Parking
-                    </p>
-                  )}
-                  {property.piscine && (
-                    <p>
-                      🏊 Piscine
-                    </p>
-                  )}
-                  {property.pricePerNight && (
-                    <p>
-                      💰{" "}
-                      {
-                        property.pricePerNight
-                      }{" "}
-                      FCFA / nuit
-                    </p>
-                  )}
-                  {property.minNights && (
-                    <p>
-                      🌙 Minimum{" "}
-                      {
-                        property.minNights
-                      }{" "}
-                      nuit(s)
-                    </p>
-                  )}
-                </div>
-              )}
+             {/* =========================
+    ÉQUIPEMENTS
+========================= */}
+{!propertyIsTerrain && (
+  <div className="property-equipements">
+    <h3>
+      🛎️ Équipements et services
+    </h3>
+    {property.wifi && (
+      <p>
+        📶 Wi-Fi
+      </p>
+    )}
+    {property.climatisation && (
+      <p>
+        ❄️ Climatisation
+      </p>
+    )}
+    {property.cuisine && (
+      <p>
+        🍳 Cuisine équipée
+      </p>
+    )}
+    {property.parking && (
+      <p>
+        🚗 Parking
+      </p>
+    )}
+    {property.piscine && (
+      <p>
+        🏊 Piscine
+      </p>
+    )}
+    {property.fitness && (
+      <p>
+        🏋️ Salle de fitness
+      </p>
+    )}
+    {property.espaceDetente && (
+      <p>
+        🧘 Espace détente
+      </p>
+    )}
+    {property.ascenseur && (
+      <p>
+        🛗 Ascenseur
+      </p>
+    )}
+    {property.videosurveillance && (
+      <p>
+        📹 Vidéosurveillance
+      </p>
+    )}
+    {property.videophone && (
+      <p>
+        📞 Vidéophone
+      </p>
+    )}
+    {property.groupeElectrogene && (
+      <p>
+        ⚡ Groupe électrogène
+      </p>
+    )}
+    {property.gardiennage && (
+      <p>
+        🛡️ Gardiennage / Sécurité
+      </p>
+    )}
+    {property.eauChaude && (
+      <p>
+        🚿 Eau chaude
+      </p>
+    )}
+    {property.terrasse && (
+      <p>
+        🌴 Terrasse / Balcon
+      </p>
+    )}
+    {property.tv && (
+      <p>
+        📺 Télévision
+      </p>
+    )}
+    {property.laveLinge && (
+      <p>
+        🧺 Lave-linge
+      </p>
+    )}
+    {property.refrigerateur && (
+      <p>
+        🧊 Réfrigérateur
+      </p>
+    )}
+    {propertyIsFurnished && property.pricePerNight && (
+      <p>
+        💰{" "}
+        {Number(
+          property.pricePerNight
+        ).toLocaleString("fr-FR")}{" "}
+        FCFA / nuit
+      </p>
+    )}
+    {propertyIsFurnished && property.minNights && (
+      <p>
+        🌙 Minimum{" "}
+        {property.minNights}{" "}
+        nuit(s)
+      </p>
+    )}
+  </div>
+)}
               {/* =========================
                   PROPRIÉTAIRE
               ========================= */}

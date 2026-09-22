@@ -927,3 +927,39 @@
   }
 
 }
+/* =========================
+   RESPONSIVE ÉQUIPEMENTS
+========================= */
+
+@media (max-width: 768px) {
+  .property-equipements {
+    padding: 20px 15px;
+    border-radius: 15px;
+  }
+
+  .property-equipements h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+
+  .property-equipements p {
+    margin: 5px 5px 5px 0;
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .property-equipements {
+    padding: 18px 12px;
+  }
+
+  .property-equipements h3 {
+    font-size: 18px;
+  }
+
+  .property-equipements p {
+    font-size: 12px;
+    padding: 7px 10px;
+  }
+}
