@@ -963,3 +963,205 @@
     padding: 7px 10px;
   }
 }
+/* =========================================
+   ÉQUIPEMENTS — NOUVEAU RESPONSIVE
+========================================= */
+
+@media (max-width: 768px) {
+
+  .property-equipment {
+    margin-top: 25px;
+    padding: 20px 15px;
+    border-radius: 15px;
+  }
+
+  .property-equipment h2 {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+
+  .equipment-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .equipment-item {
+    min-height: 48px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    gap: 8px;
+  }
+
+  .short-stay-info {
+    margin-top: 16px;
+    padding: 14px;
+  }
+
+  .short-stay-info p {
+    font-size: 13px;
+  }
+}
+
+
+/* =========================================
+   ÉQUIPEMENTS — TRÈS PETITS TÉLÉPHONES
+========================================= */
+
+@media (max-width: 480px) {
+
+  .property-equipment {
+    padding: 18px 12px;
+  }
+
+  .property-equipment h2 {
+    font-size: 18px;
+  }
+
+  .equipment-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .equipment-item {
+    min-height: 46px;
+    padding: 9px 11px;
+    font-size: 12px;
+  }
+
+  .short-stay-info {
+    padding: 12px;
+  }
+
+  .short-stay-info p {
+    font-size: 12px;
+  }
+}
+/* =========================================
+   LOCADAKAR — RESPONSIVE MOBILE
+========================================= */
+
+@media (max-width: 768px) {
+  .agency-page {
+    padding: 25px 15px 45px;
+  }
+
+  .agency-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+    padding: 22px;
+    margin-bottom: 30px;
+  }
+
+  .agency-icon {
+    width: 65px;
+    height: 65px;
+    min-width: 65px;
+    border-radius: 15px;
+    font-size: 28px;
+  }
+
+  .agency-header-info h1 {
+    font-size: 26px;
+  }
+
+  .agency-description {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .agency-section-title h2 {
+    font-size: 22px;
+  }
+
+  .agency-properties-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+
+  .agency-property-image {
+    height: 180px;
+  }
+
+  .agency-property-info {
+    padding: 14px;
+  }
+
+  .agency-property-info h3 {
+    font-size: 16px;
+  }
+
+  .agency-property-location {
+    font-size: 12px;
+  }
+
+  .agency-property-type {
+    font-size: 13px;
+  }
+
+  .agency-property-price {
+    font-size: 11px;
+    padding: 6px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .agency-page {
+    padding: 20px 12px 40px;
+  }
+
+  .agency-header {
+    padding: 18px;
+    border-radius: 15px;
+  }
+
+  .agency-header-info h1 {
+    font-size: 23px;
+  }
+
+  .agency-subtitle {
+    font-size: 14px;
+  }
+
+  .agency-description {
+    font-size: 13px;
+  }
+
+  .agency-section-title h2 {
+    font-size: 20px;
+  }
+
+  .agency-properties-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .agency-property-image {
+    height: 210px;
+  }
+
+  .agency-property-info {
+    padding: 15px;
+  }
+
+  .agency-property-info h3 {
+    font-size: 17px;
+  }
+
+  .agency-property-button {
+    width: 100%;
+    text-align: center;
+  }
+}
+/* Lien agence partenaire - mobile */
+@media (max-width: 480px) {
+  .agency-profile-link {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    font-size: 14px;
+    margin: 10px 0 14px;
+  }
+}

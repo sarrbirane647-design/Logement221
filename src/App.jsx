@@ -14,6 +14,7 @@ import APropos from "./pages/APropos";
 import Contact from "./pages/Contact";
 import Favoris from "./pages/Favoris";
 import MonCompte from "./pages/MonCompte";
+import Locadakar from "./pages/Locadakar";
 
 function App() {
 
@@ -80,6 +81,11 @@ function App() {
 <Route
   path="/favoris"
   element={<Favoris />}
+/>
+
+<Route 
+  path="/agence/locadakar" 
+  element={<Locadakar />} 
 />
 
 

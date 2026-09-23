@@ -2882,3 +2882,286 @@ html{
     font-size: 10px;
   }
 }
+/* =========================================
+   ÉQUIPEMENTS — LOGEMENT221
+========================================= */
+
+.property-equipment {
+  margin-top: 30px;
+  padding: 25px;
+  background: #f7faf8;
+  border: 1px solid #e5eee8;
+  border-radius: 18px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+}
+
+.property-equipment h2 {
+  margin: 0 0 20px;
+  color: #16211b;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.equipment-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.equipment-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 12px 15px;
+  background: #ffffff;
+  border: 1px solid #e5eee8;
+  border-radius: 12px;
+  color: #333;
+  font-size: 14px;
+  font-weight: 600;
+  transition: 0.25s ease;
+}
+
+.equipment-item:hover {
+  border-color: #1a8c3f;
+  color: #1a8c3f;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(26, 140, 63, 0.08);
+}
+
+.equipment-item:first-letter {
+  font-size: 20px;
+}
+
+.short-stay-info {
+  margin-top: 20px;
+  padding: 16px;
+  background: #ffffff;
+  border-left: 4px solid #1a8c3f;
+  border-radius: 10px;
+}
+
+.short-stay-info p {
+  margin: 5px 0;
+  color: #555;
+  font-size: 14px;
+}
+
+.short-stay-info strong {
+  color: #16211b;
+}
+/* =========================================
+   LOCADAKAR — PAGE AGENCE
+========================================= */
+
+.agency-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px 60px;
+}
+
+/* Présentation agence */
+.agency-header {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 18px;
+  margin-bottom: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.agency-icon {
+  width: 80px;
+  height: 80px;
+  min-width: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1a8c3f;
+  color: #ffffff;
+  border-radius: 18px;
+  font-size: 35px;
+}
+
+.agency-header-info h1 {
+  margin: 0 0 6px;
+  font-size: 32px;
+  color: #222;
+}
+
+.agency-subtitle {
+  margin: 0 0 12px;
+  color: #1a8c3f;
+  font-weight: 600;
+}
+
+.agency-description {
+  margin: 0 0 18px;
+  color: #666;
+  line-height: 1.6;
+  max-width: 700px;
+}
+
+.agency-phone {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #1a8c3f;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.agency-phone:hover {
+  text-decoration: underline;
+}
+
+/* Titre annonces */
+.agency-section-title {
+  margin-bottom: 25px;
+}
+
+.agency-section-title h2 {
+  margin: 0 0 6px;
+  font-size: 26px;
+  color: #222;
+}
+
+.agency-section-title p {
+  margin: 0;
+  color: #777;
+}
+
+/* Grille des biens */
+.agency-properties-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+/* Carte */
+.agency-property-card {
+  overflow: hidden;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* Image */
+.agency-property-image {
+  position: relative;
+  display: block;
+  height: 220px;
+  overflow: hidden;
+  text-decoration: none;
+}
+
+.agency-property-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.agency-property-card:hover .agency-property-image img {
+  transform: scale(1.04);
+}
+
+/* Prix */
+.agency-property-price {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background: #1a8c3f;
+  color: #ffffff;
+  padding: 7px 11px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Informations */
+.agency-property-info {
+  padding: 18px;
+}
+
+.agency-property-location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 8px;
+  color: #1a8c3f;
+  font-size: 13px;
+}
+
+.agency-property-info h3 {
+  margin: 0 0 7px;
+  font-size: 18px;
+  color: #222;
+}
+
+.agency-property-type {
+  margin: 0 0 15px;
+  color: #777;
+  font-size: 14px;
+}
+
+.agency-property-button {
+  display: inline-block;
+  background: #1a8c3f;
+  color: #ffffff;
+  padding: 9px 15px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.agency-property-button:hover {
+  background: #147232;
+}
+
+/* Aucun bien */
+.agency-empty {
+  text-align: center;
+  background: #ffffff;
+  padding: 40px 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+}
+
+.agency-empty h3 {
+  margin: 0 0 8px;
+  color: #222;
+}
+
+.agency-empty p {
+  margin: 0;
+  color: #777;
+}
+
+/* Chargement */
+.loading-message {
+  text-align: center;
+  color: #777;
+  padding: 30px 0;
+}
+/* Lien vers la page de l'agence partenaire */
+.agency-profile-link {
+  display: inline-block;
+  margin: 10px 0 15px;
+  color: #1a8c3f;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.agency-profile-link:hover {
+  color: #147331;
+  text-decoration: underline;
+}

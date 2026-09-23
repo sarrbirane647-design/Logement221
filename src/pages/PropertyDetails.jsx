@@ -1081,36 +1081,50 @@ function PropertyDetails() {
               {/* =========================
                   PROPRIÉTAIRE
               ========================= */}
-              <div className="owner-box">
-                <h3>
-                  👤 Propriétaire
-                </h3>
-                <p>
-                  {property.owner
-                    ?.name ||
-                    "Propriétaire"}
-                </p>
-                <a
-                  className="contact-owner-btn"
-                  href={`https://wa.me/${
-                    property.owner
-                      ?.phone
-                  }?text=${encodeURIComponent(
-                    propertyIsSale
-                      ? `Bonjour, je suis intéressé par votre bien à vendre "${property.title}". Est-il toujours disponible ?`
-                      : `Bonjour, je suis intéressé par votre logement "${property.title}". ${
-                          property.status ===
-                          "loue"
-                            ? "Je vois que ce logement est actuellement loué. Avez-vous un autre logement disponible ?"
-                            : "Est-il toujours disponible ?"
-                        }`
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  💬 Contacter sur WhatsApp
-                </a>
-              </div>
+           <div className="owner-box">
+  <h3>
+    {property.isAgency
+      ? "🏢 Agence immobilière"
+      : "👤 Propriétaire"}
+  </h3>
+
+  <p>
+    {property.owner?.name || "Propriétaire"}
+  </p>
+
+  {property.isAgency && property.agencySlug && (
+    <Link
+ to={`/agence/${
+  property.agencySlug ||
+  (property.owner?.name?.toLowerCase().replace(/\s/g, "") === "locadakar"
+    ? "locadakar"
+    : "")
+}`}
+      className="agency-profile-link"
+    >
+      Voir toutes les annonces →
+    </Link>
+  )}
+
+  <a
+    className="contact-owner-btn"
+    href={`https://wa.me/${
+      property.owner?.phone
+    }?text=${encodeURIComponent(
+      propertyIsSale
+        ? `Bonjour, je suis intéressé par votre bien à vendre "${property.title}". Est-il toujours disponible ?`
+        : `Bonjour, je suis intéressé par votre logement "${property.title}". ${
+            property.status === "loue"
+              ? "Je vois que ce logement est actuellement loué. Avez-vous un autre logement disponible ?"
+              : "Est-il toujours disponible ?"
+          }`
+    )}`}
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    💬 Contacter sur WhatsApp
+  </a>
+</div>
             </div>
           </>
         ) : (

@@ -6,15 +6,54 @@ import {
   doc,
   updateDoc,
   onSnapshot,
-  Timestamp
+  Timestamp,
+  getDocs
 } from "firebase/firestore";
+
 export const PropertyContext = createContext();
+
 export function PropertyProvider({ children }) {
   const [properties, setProperties] = useState([]);
   const [viewsCount, setViewsCount] = useState({});
   const [reviewsCount, setReviewsCount] = useState({});
   const [reviewsAverage, setReviewsAverage] = useState({});
   const [loading, setLoading] = useState(true);
+
+  // ================================
+  // 🏢 CHARGER LES AGENCES
+  // ================================
+  const loadAgencies = async () => {
+    try {
+      const agenciesSnapshot = await getDocs(
+        collection(db, "agencies")
+      );
+
+      const agencies = [];
+
+      agenciesSnapshot.docs.forEach((agencyDoc) => {
+        const agency = agencyDoc.data();
+
+        if (agency.slug && agency.name) {
+          agencies.push({
+            id: agencyDoc.id,
+            name: agency.name,
+            slug: agency.slug,
+            ownerUid: agency.ownerUid || null
+          });
+        }
+      });
+
+      return agencies;
+    } catch (error) {
+      console.error(
+        "Erreur chargement agences :",
+        error
+      );
+
+      return [];
+    }
+  };
+
   // ================================
   // 🏠 ÉCOUTER LES LOGEMENTS EN TEMPS RÉEL
   // ================================
@@ -24,34 +63,79 @@ export function PropertyProvider({ children }) {
       async (snapshot) => {
         try {
           const now = new Date();
+
+          const agencies = await loadAgencies();
+
           const data = await Promise.all(
             snapshot.docs.map(async (document) => {
-              const property = {
+              const rawProperty = {
                 firebaseId: document.id,
                 ...document.data()
               };
+
+              // ================================
+              // 🏢 DÉTECTION DE L'AGENCE
+              // ================================
+              const propertyOwnerName =
+                rawProperty.owner?.name
+                  ?.toLowerCase()
+                  .replace(/\s/g, "");
+
+              const explicitAgency = agencies.find(
+                (agency) =>
+                  rawProperty.agencySlug === agency.slug
+              );
+
+              const agencyByName = agencies.find(
+                (agency) =>
+                  agency.name
+                    ?.toLowerCase()
+                    .replace(/\s/g, "") ===
+                  propertyOwnerName
+              );
+
+              const agency =
+                explicitAgency || agencyByName || null;
+
+              const property = {
+                ...rawProperty,
+                ...(agency
+                  ? {
+                      isAgency: true,
+                      agencySlug: agency.slug
+                    }
+                  : {
+                      isAgency: false
+                    })
+              };
+
               // ================================
               // ⭐ GESTION PREMIUM
               // ================================
               if (property.premium === true) {
                 let premiumUntilDate = null;
+
                 // Firebase Timestamp
                 if (
                   property.premiumUntil &&
-                  typeof property.premiumUntil.toDate === "function"
+                  typeof property.premiumUntil.toDate ===
+                    "function"
                 ) {
                   premiumUntilDate =
                     property.premiumUntil.toDate();
                 }
+
                 // Date enregistrée en texte
                 else if (property.premiumUntil) {
                   const parsedDate = new Date(
                     property.premiumUntil
                   );
+
                   if (!isNaN(parsedDate.getTime())) {
                     premiumUntilDate = parsedDate;
                   }
                 }
+
                 // ================================
                 // ⏰ PREMIUM EXPIRÉ
                 // ================================
@@ -63,6 +147,7 @@ export function PropertyProvider({ children }) {
                     "⏰ PREMIUM EXPIRÉ :",
                     property.title
                   );
+
                   const expiredData = {
                     premium: false,
                     premiumUntil: null,
@@ -70,6 +155,7 @@ export function PropertyProvider({ children }) {
                     premiumDuration: null,
                     premiumPrice: null
                   };
+
                   await updateDoc(
                     doc(
                       db,
@@ -78,11 +164,13 @@ export function PropertyProvider({ children }) {
                     ),
                     expiredData
                   );
+
                   return {
                     ...property,
                     ...expiredData
                   };
                 }
+
                 // ================================
                 // ⭐ PREMIUM ENCORE ACTIF
                 // ================================
@@ -93,20 +181,19 @@ export function PropertyProvider({ children }) {
                   };
                 }
               }
+
               return property;
             })
           );
+
           setProperties(data);
           setLoading(false);
-
-console.log("🏠 PROPERTIES FIREBASE CHARGÉES :", data.length);
-console.log("🏠 PROPERTIES :", data);
-
         } catch (error) {
           console.error(
             "Erreur traitement logements Firebase :",
             error
           );
+
           setLoading(false);
         }
       },
@@ -115,11 +202,14 @@ console.log("🏠 PROPERTIES :", data);
           "Erreur écoute logements Firebase :",
           error
         );
+
         setLoading(false);
       }
     );
+
     return () => unsubscribe();
   }, []);
+
   // ================================
   // ⭐ ÉCOUTER LES AVIS EN TEMPS RÉEL
   // ================================
@@ -129,29 +219,32 @@ console.log("🏠 PROPERTIES :", data);
       (snapshot) => {
         const counts = {};
         const ratings = {};
+
         snapshot.docs.forEach((document) => {
           const review = document.data();
           const propertyId = review.propertyId;
+
           if (!propertyId) return;
+
           counts[propertyId] =
             (counts[propertyId] || 0) + 1;
+
           ratings[propertyId] =
             (ratings[propertyId] || 0) +
             Number(review.rating || 0);
         });
+
         const averages = {};
+
         Object.keys(ratings).forEach((propertyId) => {
           averages[propertyId] = (
             ratings[propertyId] /
             counts[propertyId]
           ).toFixed(1);
         });
+
         setReviewsCount(counts);
         setReviewsAverage(averages);
-        console.log(
-          "📡 AVIS GLOBAUX :",
-          counts
-        );
       },
       (error) => {
         console.error(
@@ -160,8 +253,10 @@ console.log("🏠 PROPERTIES :", data);
         );
       }
     );
+
     return () => unsubscribe();
   }, []);
+
   // ================================
   // 👁️ ÉCOUTER LES VUES EN TEMPS RÉEL
   // ================================
@@ -170,18 +265,18 @@ console.log("🏠 PROPERTIES :", data);
       collection(db, "views"),
       (snapshot) => {
         const counts = {};
+
         snapshot.docs.forEach((document) => {
           const view = document.data();
           const propertyId = view.propertyId;
+
           if (!propertyId) return;
+
           counts[propertyId] =
             (counts[propertyId] || 0) + 1;
         });
+
         setViewsCount(counts);
-        console.log(
-          "📡 VUES GLOBALES :",
-          counts
-        );
       },
       (error) => {
         console.error(
@@ -190,8 +285,10 @@ console.log("🏠 PROPERTIES :", data);
         );
       }
     );
+
     return () => unsubscribe();
   }, []);
+
   // ================================
   // 🗑️ SUPPRIMER UNE ANNONCE
   // ================================
@@ -200,6 +297,7 @@ console.log("🏠 PROPERTIES :", data);
       await deleteDoc(
         doc(db, "properties", id)
       );
+
       setProperties((prev) =>
         prev.filter(
           (property) =>
@@ -213,6 +311,7 @@ console.log("🏠 PROPERTIES :", data);
       );
     }
   };
+
   // ================================
   // ⭐ ACTIVER PREMIUM
   // ================================
@@ -222,10 +321,12 @@ console.log("🏠 PROPERTIES :", data);
   ) => {
     try {
       const premiumUntil = new Date();
+
       premiumUntil.setDate(
         premiumUntil.getDate() +
-        plan.duration
+          plan.duration
       );
+
       const premiumData = {
         premium: true,
         premiumUntil:
@@ -236,15 +337,18 @@ console.log("🏠 PROPERTIES :", data);
         premiumDuration: plan.duration,
         premiumPrice: plan.price
       };
+
       const propertyRef = doc(
         db,
         "properties",
         propertyId
       );
+
       await updateDoc(
         propertyRef,
         premiumData
       );
+
       setProperties((prev) =>
         prev.map((property) =>
           property.firebaseId === propertyId
@@ -255,20 +359,24 @@ console.log("🏠 PROPERTIES :", data);
             : property
         )
       );
+
       console.log(
         "⭐ PREMIUM ACTIVÉ :",
         propertyId,
         premiumData
       );
+
       return true;
     } catch (error) {
       console.error(
         "Erreur activation Premium :",
         error
       );
+
       return false;
     }
   };
+
   // ================================
   // ✏️ MODIFIER UNE ANNONCE
   // ================================
@@ -282,10 +390,12 @@ console.log("🏠 PROPERTIES :", data);
         "properties",
         id
       );
+
       await updateDoc(
         propertyRef,
         data
       );
+
       setProperties((prev) =>
         prev.map((property) =>
           property.firebaseId === id
@@ -303,6 +413,7 @@ console.log("🏠 PROPERTIES :", data);
       );
     }
   };
+
   // ================================
   // 🔄 RECHARGEMENT
   // ================================
@@ -311,6 +422,7 @@ console.log("🏠 PROPERTIES :", data);
       "📡 Les logements sont synchronisés en temps réel."
     );
   };
+
   // ================================
   // CONTEXT
   // ================================
